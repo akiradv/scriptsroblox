@@ -6,7 +6,7 @@ async function loadScripts() {
   try {
     const response = await fetch(BOT_DataURL);
     BOT_Data = await response.json();
-    BOT_Scripts = BOT_Data.scripts;
+    BOT_Scripts = BOT_Data.scripts.filter(s => s.available);
     renderScripts();
   } catch (err) {
     console.error("failed to load scripts.json", err);
@@ -33,6 +33,11 @@ function getStatusClass(status) {
 function renderScripts() {
     const container = document.getElementById('scripts-container');
     container.innerHTML = '';
+    
+    if (BOT_Scripts.length === 0) {
+        container.innerHTML = '<p style="color: var(--text-dim); font-size: 14px;">no scripts available yet. check the roadmap.</p>';
+        return;
+    }
     
     BOT_Scripts.forEach((script, index) => {
         const card = document.createElement('div');
