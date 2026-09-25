@@ -20,17 +20,17 @@
         "Fixed ESP color not updating on round restart"
       ]
     },
-    {
+        {
       "id": "lt2",
       "name": "LT2 Premium Hub",
       "game": "Lumber Tycoon 2",
-      "version": "1.0.0",
+      "version": "0.0.0",
       "status": "Alpha",
       "lastUpdated": "2026-09-25",
       "available": false,
-      "loadstring": "loadstring(game:HttpGet(\"https://raw.githubusercontent.com/akiradv/scriptsroblox/main/scripts/lt2p.lua\"))()",
-      "features": ["Auto Chop", "Teleports", "Fluent UI"],
-      "changelog": ["Initial release", "Auto Chop via WoodSection", "WoodRUs and Base teleports"]
+      "loadstring": "",
+      "features": [],
+      "changelog": []
     },
     {
       "id": "99n",
