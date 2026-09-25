@@ -1,38 +1,18 @@
-const scripts = [
-    {
-        name: "FTF Premium Hub",
-        game: "Flee the Facility",
-        version: "v1.2.5",
-        lastUpdated: "2026-09-25",
-        status: "Stable",
-        description: "Complete and optimized hub for Flee the Facility. Includes smart ESP that differentiates Beast from Survivors, instant Auto-Hack, teleport to available computers and freezers, Anti-AFK, JobId Rejoin and modern Fluent UI interface.",
-        features: ["Smart ESP", "Auto-Hack", "Teleports", "Anti-AFK", "Fluent UI"],
-        loadstring: 'loadstring(game:HttpGet("https://raw.githubusercontent.com/akiradv/scriptsroblox/main/scripts/ftfp.lua"))()',
-        github: "https://github.com/akiradv/scriptsroblox"
-    },
-    {
-        name: "LT2 Premium Hub",
-        game: "Lumber Tycoon 2",
-        version: "v1.0.0",
-        lastUpdated: "2026-09-25",
-        status: "Alpha",
-        description: "Hub in development for Lumber Tycoon 2. Focused on optimized Auto Chop via WoodSection and ClickDetector, precise teleports to stores (WoodRUs) and Base, with Fluent UI interface.",
-        features: ["Auto Chop", "Teleports", "Fluent UI", "In Dev"],
-        loadstring: 'loadstring(game:HttpGet("https://raw.githubusercontent.com/akiradv/scriptsroblox/main/scripts/lt2p.lua"))()',
-        github: "https://github.com/akiradv/scriptsroblox"
-    },
-    {
-        name: "99 Nights Auto-Farm",
-        game: "99 Nights In the Forest",
-        version: "v0.9.5",
-        lastUpdated: "2026-10-18",
-        status: "Beta",
-        description: "Automatic farm script for 99 Nights In the Forest. Optimized for performance, includes auto resource collection, basic anti-cheat bypass and minimalist interface.",
-        features: ["Auto-Farm", "Auto-Collect", "Bypass", "Lightweight"],
-        loadstring: 'loadstring(game:HttpGet("https://raw.githubusercontent.com/akiradv/99nights/main/main.lua"))()',
-        github: "https://github.com/akiradv/99nights"
-    }
-];
+const BOT_DataURL = "https://raw.githubusercontent.com/akiradv/scriptsroblox/main/scripts.json";
+let BOT_Scripts = [];
+let BOT_Data = null;
+
+async function loadScripts() {
+  try {
+    const response = await fetch(BOT_DataURL);
+    BOT_Data = await response.json();
+    BOT_Scripts = BOT_Data.scripts;
+    renderScripts();
+  } catch (err) {
+    console.error("failed to load scripts.json", err);
+    document.getElementById('scripts-container').innerHTML = '<p class="error">failed to load scripts. check back later.</p>';
+  }
+}
 
 function formatDate(dateString) {
     const date = new Date(dateString);
@@ -52,8 +32,9 @@ function getStatusClass(status) {
 
 function renderScripts() {
     const container = document.getElementById('scripts-container');
+    container.innerHTML = '';
     
-    scripts.forEach((script, index) => {
+    BOT_Scripts.forEach((script, index) => {
         const card = document.createElement('div');
         card.className = 'script-card';
         card.style.animationDelay = `${index * 0.08}s`;
@@ -67,10 +48,10 @@ function renderScripts() {
                     <h3 class="card-title">${script.name}</h3>
                     <span class="card-game">${script.game}</span>
                 </div>
-                <div class="card-version">${script.version}</div>
+                <div class="card-version">v${script.version}</div>
             </div>
             
-            <p class="card-description">${script.description}</p>
+            <p class="card-description">${script.changelog.map(c => "• " + c).join(" · ")}</p>
             
             <div class="card-meta">
                 <div class="meta-item">
@@ -110,7 +91,7 @@ function renderScripts() {
                     </svg>
                     Copy Loadstring
                 </button>
-                <a href="${script.github}" target="_blank" class="btn btn-github">
+                <a href="${BOT_Data.github}" target="_blank" class="btn btn-github">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
                     </svg>
@@ -161,4 +142,4 @@ function showToast() {
     }, 3000);
 }
 
-document.addEventListener('DOMContentLoaded', renderScripts);
+document.addEventListener('DOMContentLoaded', loadScripts);
