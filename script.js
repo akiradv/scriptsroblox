@@ -7,7 +7,7 @@ const scripts = [
         status: "Stable",
         description: "Complete and optimized hub for Flee the Facility. Includes smart ESP that differentiates Beast from Survivors, instant Auto-Hack, teleport to available computers and freezers, Anti-AFK, JobId Rejoin and modern Fluent UI interface.",
         features: ["Smart ESP", "Auto-Hack", "Teleports", "Anti-AFK", "Fluent UI"],
-        loadstring: 'loadstring(game:HttpGet("https://raw.githubusercontent.com/akiradv/scriptsroblox/main/scripts/ftf.lua"))()',
+        loadstring: 'loadstring(game:HttpGet("https://raw.githubusercontent.com/akiradv/scriptsroblox/main/scripts/ftfp.lua"))()',
         github: "https://github.com/akiradv/scriptsroblox"
     },
     {
@@ -18,7 +18,7 @@ const scripts = [
         status: "Alpha",
         description: "Hub in development for Lumber Tycoon 2. Focused on optimized Auto Chop via WoodSection and ClickDetector, precise teleports to stores (WoodRUs) and Base, with Fluent UI interface.",
         features: ["Auto Chop", "Teleports", "Fluent UI", "In Dev"],
-        loadstring: 'loadstring(game:HttpGet("https://raw.githubusercontent.com/akiradv/scriptsroblox/main/scripts/lt2.lua"))()',
+        loadstring: 'loadstring(game:HttpGet("https://raw.githubusercontent.com/akiradv/scriptsroblox/main/scripts/lt2p.lua"))()',
         github: "https://github.com/akiradv/scriptsroblox"
     },
     {
