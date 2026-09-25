@@ -1,0 +1,54 @@
+{
+  "botVersion": "1.0.0",
+  "website": "https://akiradv.github.io/scriptsroblox",
+  "github": "https://github.com/akiradv/scriptsroblox",
+  "scripts": [
+    {
+      "id": "ftf",
+      "name": "FTF Premium Hub",
+      "game": "Flee the Facility",
+      "version": "1.2.5",
+      "status": "Stable",
+      "lastUpdated": "2026-09-25",
+      "loadstring": "loadstring(game:HttpGet(\"https://raw.githubusercontent.com/akiradv/scriptsroblox/main/scripts/ftfp.lua\"))()",
+      "features": ["Smart ESP", "Auto-Hack", "Teleports", "Anti-AFK", "Fluent UI"],
+      "changelog": [
+        "Fixed Rejoin Server using JobId",
+        "Optimized Auto-Hack network usage",
+        "Improved teleport logic with distance calculation",
+        "Fixed ESP color not updating on round restart"
+      ]
+    },
+    {
+      "id": "lt2",
+      "name": "LT2 Premium Hub",
+      "game": "Lumber Tycoon 2",
+      "version": "1.0.0",
+      "status": "Alpha",
+      "lastUpdated": "2026-09-25",
+      "loadstring": "loadstring(game:HttpGet(\"https://raw.githubusercontent.com/akiradv/scriptsroblox/main/scripts/lt2p.lua\"))()",
+      "features": ["Auto Chop", "Teleports", "Fluent UI"],
+      "changelog": ["Initial release", "Auto Chop via WoodSection", "WoodRUs and Base teleports"]
+    },
+    {
+      "id": "99n",
+      "name": "99 Nights Hub",
+      "game": "99 Nights In the Forest",
+      "version": "1.1.0",
+      "status": "Beta",
+      "lastUpdated": "2026-09-25",
+      "loadstring": "loadstring(game:HttpGet(\"https://raw.githubusercontent.com/akiradv/99nights/main/main.lua\"))()",
+      "features": ["Auto Tree Farm", "ESP", "Hitbox Expander", "Noclip"],
+      "changelog": [
+        "Added Auto Tree Farm",
+        "Added Player and Item ESP",
+        "Added Hitbox Expander",
+        "Added Noclip and Fast Interact"
+      ]
+    }
+  ],
+  "roadmap": {
+    "developing": ["Lumber Tycoon 2", "99 Nights In the Forest"],
+    "planned": ["Hide And Seek", "Tower of Hell", "Murder Mystery 2", "Muscle Legends"]
+  }
+}
