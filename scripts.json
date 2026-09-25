@@ -10,6 +10,7 @@
       "version": "1.2.5",
       "status": "Stable",
       "lastUpdated": "2026-09-25",
+      "available": true,
       "loadstring": "loadstring(game:HttpGet(\"https://raw.githubusercontent.com/akiradv/scriptsroblox/main/scripts/ftfp.lua\"))()",
       "features": ["Smart ESP", "Auto-Hack", "Teleports", "Anti-AFK", "Fluent UI"],
       "changelog": [
@@ -26,6 +27,7 @@
       "version": "1.0.0",
       "status": "Alpha",
       "lastUpdated": "2026-09-25",
+      "available": false,
       "loadstring": "loadstring(game:HttpGet(\"https://raw.githubusercontent.com/akiradv/scriptsroblox/main/scripts/lt2p.lua\"))()",
       "features": ["Auto Chop", "Teleports", "Fluent UI"],
       "changelog": ["Initial release", "Auto Chop via WoodSection", "WoodRUs and Base teleports"]
@@ -37,6 +39,7 @@
       "version": "1.1.0",
       "status": "Beta",
       "lastUpdated": "2026-09-25",
+      "available": false,
       "loadstring": "loadstring(game:HttpGet(\"https://raw.githubusercontent.com/akiradv/99nights/main/main.lua\"))()",
       "features": ["Auto Tree Farm", "ESP", "Hitbox Expander", "Noclip"],
       "changelog": [
