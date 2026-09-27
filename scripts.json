@@ -29,7 +29,7 @@
         "Join Another Server"
       ],
       "changelog": [
-        "v1.2.9: Fixed closet teleport using GetBoundingBox(), Fixed Anti-Fail/Auto-Hack using 0.1s loop (again), fixed Computer ESP using BrickColor and full English translation",
+        "v1.2.9: Fixed closet teleport using GetBoundingBox(), Fixed Anti-Fail/Auto-Hack using 0.1s loop (again), fixed Computer ESP using BrickColor and full English translation"
       ]
     },
     {
