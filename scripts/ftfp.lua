@@ -29,9 +29,9 @@ local FTF_Workspace = game:GetService("Workspace")
 local FTF_ReplicatedStorage = game:GetService("ReplicatedStorage")
 local FTF_TeleportService = game:GetService("TeleportService")
 
-FTF_Tabs.Main:AddParagraph({ Title = "Objetivo", Content = "Fornecer um utilitário casual, leve e indetectável para Flee the Facility, focado em qualidade de vida sem quebrar a experiência do jogo." })
-FTF_Tabs.Main:AddParagraph({ Title = "Local e Segurança", Content = "Este script é 100% Open Source e roda localmente no seu executor. O código é aberto para garantir transparência total, segurança e confiança da comunidade." })
-FTF_Tabs.Main:AddParagraph({ Title = "Informações", Content = "Versão: 1.2.5\nDesenvolvedor: AkiraDev\nLink: github.com/akiradv" })
+FTF_Tabs.Main:AddParagraph({ Title = "Objective", Content = "Provide a casual, lightweight, and undetectable utility for Flee the Facility, focused on quality of life without breaking the game experience." })
+FTF_Tabs.Main:AddParagraph({ Title = "Local & Security", Content = "This script is 100% Open Source and runs locally on your executor. The code is open to ensure total transparency, security, and community trust." })
+FTF_Tabs.Main:AddParagraph({ Title = "Information", Content = "Version: 1.2.9 (Closet TP & Translation)\nDeveloper: AkiraDev\nLink: github.com/akiradv" })
 
 local FTF_ActiveHighlights = { Computer = {}, FreezePod = {}, ExitDoor = {}, Closet = {}, Vent = {} }
 
@@ -54,12 +54,30 @@ local function FTF_ApplyHighlight(obj, category, color)
     table.insert(FTF_ActiveHighlights[category], FTF_HL)
 end
 
+local function FTF_GetComputerColor(screen)
+    if not screen then return Color3.fromRGB(0, 255, 0) end
+    if screen.BrickColor == BrickColor.new("Bright blue") then
+        return Color3.fromRGB(0, 150, 255)
+    elseif screen.BrickColor == BrickColor.new("Dark green") then
+        return Color3.fromRGB(0, 255, 0)
+    end
+    local FTF_C = screen.Color
+    return (FTF_C.B > 0.5 and FTF_C.R < 0.5) and Color3.fromRGB(0, 150, 255) or Color3.fromRGB(0, 255, 0)
+end
+
+local function FTF_IsComputerIncomplete(screen)
+    if not screen then return false end
+    if screen.BrickColor == BrickColor.new("Bright blue") then return true end
+    local FTF_C = screen.Color
+    return (FTF_C.B > 0.5 and FTF_C.R < 0.5)
+end
+
 local function FTF_ScanMap(category, colorFunc)
     FTF_ClearHighlights(category)
     for _, obj in ipairs(FTF_Workspace:GetDescendants()) do
         if category == "Computer" and obj.Name == "ComputerTable" then
             local FTF_Screen = obj:FindFirstChild("Screen")
-            local FTF_Color = colorFunc(FTF_Screen)
+            local FTF_Color = FTF_GetComputerColor(FTF_Screen)
             FTF_ApplyHighlight(obj, category, FTF_Color)
         elseif category == "FreezePod" and obj.Name == "FreezePod" then
             FTF_ApplyHighlight(obj, category, colorFunc())
@@ -80,8 +98,7 @@ task.spawn(function()
                 if hl and hl.Parent then
                     local FTF_Screen = hl.Parent:FindFirstChild("Screen")
                     if FTF_Screen and FTF_Screen:IsA("BasePart") then
-                        local FTF_C = FTF_Screen.Color
-                        hl.FillColor = (FTF_C.B > 0.5 and FTF_C.R < 0.5) and Color3.fromRGB(0, 150, 255) or Color3.fromRGB(0, 255, 0)
+                        hl.FillColor = FTF_GetComputerColor(FTF_Screen)
                     end
                 end
             end
@@ -92,7 +109,7 @@ end)
 FTF_Workspace.DescendantAdded:Connect(function(obj)
     if FTF_Options.FTF_ComputerESP and FTF_Options.FTF_ComputerESP.Value and obj.Name == "ComputerTable" then
         local FTF_Screen = obj:FindFirstChild("Screen")
-        local FTF_Color = FTF_Screen and ((FTF_Screen.Color.B > 0.5 and FTF_Screen.Color.R < 0.5) and Color3.fromRGB(0, 150, 255) or Color3.fromRGB(0, 255, 0)) or Color3.fromRGB(0, 255, 0)
+        local FTF_Color = FTF_GetComputerColor(FTF_Screen)
         FTF_ApplyHighlight(obj, "Computer", FTF_Color)
     elseif FTF_Options.FTF_FreezePodESP and FTF_Options.FTF_FreezePodESP.Value and obj.Name == "FreezePod" then
         FTF_ApplyHighlight(obj, "FreezePod", Color3.fromRGB(0, 200, 255))
@@ -193,20 +210,16 @@ task.spawn(function()
     end
 end)
 
-FTF_Tabs.Visual:AddToggle("FTF_PlayerESP", { Title = "Player ESP", Description = "Vermelho = Besta, Branco = Sobrevivente", Default = false, Callback = function() FTF_UpdatePlayerESP() end })
+FTF_Tabs.Visual:AddToggle("FTF_PlayerESP", { Title = "Player ESP", Description = "Red = Beast, White = Survivor", Default = false, Callback = function() FTF_UpdatePlayerESP() end })
 
 FTF_Tabs.Visual:AddToggle("FTF_ComputerESP", { 
     Title = "Computer ESP", 
-    Description = "Azul = Incompleto, Verde = Completo", 
+    Description = "Blue = Incomplete, Green = Complete", 
     Default = false, 
     Callback = function(state)
         if state then 
             FTF_ScanMap("Computer", function(screen)
-                if screen and screen:IsA("BasePart") then
-                    local FTF_C = screen.Color
-                    return (FTF_C.B > 0.5 and FTF_C.R < 0.5) and Color3.fromRGB(0, 150, 255) or Color3.fromRGB(0, 255, 0)
-                end
-                return Color3.fromRGB(0, 255, 0)
+                return FTF_GetComputerColor(screen)
             end) 
         else 
             FTF_ClearHighlights("Computer") 
@@ -214,32 +227,65 @@ FTF_Tabs.Visual:AddToggle("FTF_ComputerESP", {
     end
 })
 
-FTF_Tabs.Visual:AddToggle("FTF_FreezePodESP", { Title = "Freeze Pod ESP", Description = "Destaque Ciano nos Freezers", Default = false, Callback = function(state)
+FTF_Tabs.Visual:AddToggle("FTF_FreezePodESP", { Title = "Freeze Pod ESP", Description = "Cyan highlight on Freeze Pods", Default = false, Callback = function(state)
     if state then FTF_ScanMap("FreezePod", function() return Color3.fromRGB(0, 200, 255) end) else FTF_ClearHighlights("FreezePod") end
 end})
 
-FTF_Tabs.Visual:AddToggle("FTF_ExitESP", { Title = "Exit Door ESP", Description = "Destaque Amarelo nas Portas de Saída", Default = false, Callback = function(state)
+FTF_Tabs.Visual:AddToggle("FTF_ExitESP", { Title = "Exit Door ESP", Description = "Yellow highlight on Exit Doors", Default = false, Callback = function(state)
     if state then FTF_ScanMap("ExitDoor", function() return Color3.fromRGB(255, 255, 0) end) else FTF_ClearHighlights("ExitDoor") end
 end})
 
-FTF_Tabs.Visual:AddToggle("FTF_ClosetESP", { Title = "Closet / Locker ESP", Description = "Destaque Marrom em Armários", Default = false, Callback = function(state)
+FTF_Tabs.Visual:AddToggle("FTF_ClosetESP", { Title = "Closet / Locker ESP", Description = "Brown highlight on Closets/Lockers", Default = false, Callback = function(state)
     if state then FTF_ScanMap("Closet", function() return Color3.fromRGB(139, 69, 19) end) else FTF_ClearHighlights("Closet") end
 end})
 
-FTF_Tabs.Visual:AddToggle("FTF_VentESP", { Title = "Air Vent ESP", Description = "Destaque Cinza em Dutos de Ventilação", Default = false, Callback = function(state)
+FTF_Tabs.Visual:AddToggle("FTF_VentESP", { Title = "Air Vent ESP", Description = "Gray highlight on Air Vents", Default = false, Callback = function(state)
     if state then FTF_ScanMap("Vent", function() return Color3.fromRGB(128, 128, 128) end) else FTF_ClearHighlights("Vent") end
 end})
 
-FTF_Tabs.Combat:AddToggle("FTF_AutoHack", { Title = "Anti-Fail Hack", Description = "Completa o minigame de hack instantaneamente", Default = true, Callback = function() end })
+local FTF_AntiFailHackEnabled = true
+
+local old_namecall
+local hook_success, hook_err = pcall(function()
+    old_namecall = hookmetamethod(game, "__namecall", newcclosure(function(self, ...)
+        local method = getnamecallmethod()
+        local args = {...}
+        
+        if FTF_AntiFailHackEnabled and not checkcaller() then
+            if self.Name == "RemoteEvent" and method == "FireServer" then
+                if args[1] == "SetPlayerMinigameResult" and args[2] == false then
+                    args[2] = true
+                    return self.FireServer(self, unpack(args))
+                end
+            end
+        end
+        
+        return old_namecall(self, ...)
+    end))
+end)
 
 task.spawn(function()
-    while task.wait(1) do
-        if FTF_Options.FTF_AutoHack and FTF_Options.FTF_AutoHack.Value then
+    while true do
+        if FTF_AntiFailHackEnabled then
             local FTF_RE = FTF_ReplicatedStorage:FindFirstChild("RemoteEvent")
-            if FTF_RE then FTF_RE:FireServer("SetPlayerMinigameResult", true) end
+            if FTF_RE then 
+                pcall(function()
+                    FTF_RE:FireServer("SetPlayerMinigameResult", true)
+                end)
+            end
         end
+        task.wait(0.1)
     end
 end)
+
+FTF_Tabs.Combat:AddToggle("FTF_AutoHack", { 
+    Title = "Anti-Fail / Auto Hack", 
+    Description = "Instantly completes the minigame and prevents failures", 
+    Default = true, 
+    Callback = function(state) 
+        FTF_AntiFailHackEnabled = state
+    end 
+})
 
 FTF_Tabs.Teleport:AddButton({ Title = "Teleport to Available Computer", Description = "Teleports to the nearest incomplete computer", Callback = function()
     local FTF_Char = FTF_LocalPlayer.Character
@@ -248,8 +294,7 @@ FTF_Tabs.Teleport:AddButton({ Title = "Teleport to Available Computer", Descript
     local FTF_Comps = {}
     for _, obj in ipairs(FTF_Workspace:GetDescendants()) do
         if obj.Name == "ComputerTable" and obj:FindFirstChild("Screen") then
-            local FTF_C = obj.Screen.Color
-            if FTF_C.B > 0.5 and FTF_C.R < 0.5 then
+            if FTF_IsComputerIncomplete(obj.Screen) then
                 table.insert(FTF_Comps, {part = obj.Screen, dist = (FTF_Pos - obj.Screen.Position).Magnitude})
             end
         end
@@ -258,10 +303,10 @@ FTF_Tabs.Teleport:AddButton({ Title = "Teleport to Available Computer", Descript
     if #FTF_Comps > 0 then
         if FTF_Char and FTF_Char:FindFirstChild("HumanoidRootPart") then
             FTF_Char.HumanoidRootPart.CFrame = CFrame.new(FTF_Comps[1].part.Position + Vector3.new(0, 2, 2.5))
-            FTF_Fluent:Notify({Title = "Teleporte", Content = "Indo para o computador!", Duration = 2})
+            FTF_Fluent:Notify({Title = "Teleport", Content = "Teleporting to computer!", Duration = 2})
         end
     else
-        FTF_Fluent:Notify({Title = "Aviso", Content = "Todos os computadores já estão completos!", Duration = 2})
+        FTF_Fluent:Notify({Title = "Warning", Content = "All computers are already complete!", Duration = 2})
     end
 end})
 
@@ -272,18 +317,30 @@ FTF_Tabs.Teleport:AddButton({ Title = "Teleport to Nearest Closet", Description 
     local FTF_Closets = {}
     for _, obj in ipairs(FTF_Workspace:GetDescendants()) do
         if obj.Name == "Closet" or obj.Name == "Locker" or obj.Name == "Wardrobe" then
-            local FTF_Target = obj:FindFirstChild("Door") or obj:FindFirstChild("Handle") or obj.PrimaryPart or obj
-            if FTF_Target and FTF_Target:IsA("BasePart") then
-                table.insert(FTF_Closets, {part = FTF_Target, dist = (FTF_Pos - FTF_Target.Position).Magnitude})
+            local FTF_PosTarget
+            if obj:IsA("Model") then
+                local cframe, size = obj:GetBoundingBox()
+                FTF_PosTarget = cframe.Position
+            elseif obj:IsA("BasePart") then
+                FTF_PosTarget = obj.Position
+            else
+                local FTF_Target = obj:FindFirstChildWhichIsA("BasePart")
+                if FTF_Target then FTF_PosTarget = FTF_Target.Position end
+            end
+            
+            if FTF_PosTarget then
+                table.insert(FTF_Closets, {pos = FTF_PosTarget, dist = (FTF_Pos - FTF_PosTarget).Magnitude})
             end
         end
     end
     table.sort(FTF_Closets, function(a, b) return a.dist < b.dist end)
     if #FTF_Closets > 0 then
         if FTF_Char and FTF_Char:FindFirstChild("HumanoidRootPart") then
-            FTF_Char.HumanoidRootPart.CFrame = CFrame.new(FTF_Closets[1].part.Position + Vector3.new(0, 2, 2))
-            FTF_Fluent:Notify({Title = "Teleporte", Content = "Indo para o closet!", Duration = 2})
+            FTF_Char.HumanoidRootPart.CFrame = CFrame.new(FTF_Closets[1].pos + Vector3.new(0, 2, 0))
+            FTF_Fluent:Notify({Title = "Teleport", Content = "Teleporting to closet!", Duration = 2})
         end
+    else
+        FTF_Fluent:Notify({Title = "Warning", Content = "No closets found!", Duration = 2})
     end
 end})
 
@@ -301,7 +358,7 @@ FTF_Tabs.Teleport:AddButton({ Title = "Teleport to Exit", Description = "Telepor
     if #FTF_Exits > 0 then
         if FTF_Char and FTF_Char:FindFirstChild("HumanoidRootPart") then
             FTF_Char.HumanoidRootPart.CFrame = CFrame.new(FTF_Exits[1].part.Position + Vector3.new(0, 3, 0))
-            FTF_Fluent:Notify({Title = "Teleporte", Content = "Indo para a saída!", Duration = 2})
+            FTF_Fluent:Notify({Title = "Teleport", Content = "Teleporting to exit!", Duration = 2})
         end
     end
 end})
@@ -320,7 +377,7 @@ FTF_Tabs.Teleport:AddButton({ Title = "Teleport to Freeze Pod", Description = "T
     if #FTF_Pods > 0 then
         if FTF_Char and FTF_Char:FindFirstChild("HumanoidRootPart") then
             FTF_Char.HumanoidRootPart.CFrame = CFrame.new(FTF_Pods[1].part.Position + Vector3.new(0, 3, 0))
-            FTF_Fluent:Notify({Title = "Teleporte", Content = "Indo para o freezer!", Duration = 2})
+            FTF_Fluent:Notify({Title = "Teleport", Content = "Teleporting to freeze pod!", Duration = 2})
         end
     end
 end})
@@ -336,9 +393,9 @@ end)
 
 FTF_Tabs.Player:AddButton({ 
     Title = "Rejoin Server", 
-    Description = "Reentra no EXATO mesmo servidor atual (JobId)", 
+    Description = "Rejoins the EXACT same current server (JobId)", 
     Callback = function()
-        FTF_Fluent:Notify({Title = "Sistema", Content = "Reconectando ao mesmo servidor...", Duration = 2})
+        FTF_Fluent:Notify({Title = "System", Content = "Reconnecting to the same server...", Duration = 2})
         task.wait(0.5)
         pcall(function()
             FTF_TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, FTF_LocalPlayer)
@@ -366,4 +423,4 @@ FTF_Tabs.Credits:AddParagraph({ Title = "Credits", Content = "Developer: AkiraDe
 
 FTF_Window:SelectTab(1)
 
-FTF_Fluent:Notify({Title = "FTF Premium Hub", Content = "Version 1.2.5 loaded successfully.", Duration = 3})
+FTF_Fluent:Notify({Title = "FTF Premium Hub", Content = "Version 1.2.9 loaded successfully.", Duration = 3})
