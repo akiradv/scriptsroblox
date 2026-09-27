@@ -4,7 +4,7 @@ let BOT_Data = null;
 
 async function loadScripts() {
   try {
-    const response = await fetch(BOT_DataURL);
+    const response = await fetch(BOT_DATAURL + "?t=" + Date.now(), { cache: "no-store" });
     BOT_Data = await response.json();
     BOT_Scripts = BOT_Data.scripts.filter(s => s.available);
     renderScripts();
