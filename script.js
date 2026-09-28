@@ -15,11 +15,9 @@ async function loadScripts() {
 }
 
 function formatDate(dateString) {
-  const date = new Date(dateString);
-  const day = String(date.getDate()).padStart(2, '0');
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const year = date.getFullYear();
-  return `${day}/${month}/${year}`;
+  const BOT_Parts = String(dateString).split("-");
+  if (BOT_Parts.length !== 3) return dateString;
+  return BOT_Parts[2] + "/" + BOT_Parts[1] + "/" + BOT_Parts[0];
 }
 
 function getStatusClass(status) {
@@ -28,6 +26,12 @@ function getStatusClass(status) {
   if (s === "beta") return "status-beta";
   if (s === "alpha") return "status-alpha";
   return "status-stable";
+}
+
+function getGitHubUrl(script) {
+  const BOT_Match = script.loadstring.match(/scripts\/([A-Za-z0-9_.-]+\.lua)/);
+  if (BOT_Match && BOT_Data) return BOT_Data.github + "/blob/main/scripts/" + BOT_Match[1];
+  return BOT_Data ? BOT_Data.github : "#";
 }
 
 function renderScripts() {
@@ -44,42 +48,35 @@ function renderScripts() {
     card.className = 'script-card';
     card.style.animationDelay = `${index * 0.08}s`;
 
-    const featuresHTML = script.features.map(f => `<li>${f}</li>`).join('');
     const statusClass = getStatusClass(script.status);
+    const tagsHTML = script.features.map(f => `<span class="tag">${f}</span>`).join('');
+    const changelogHTML = script.changelog.map(c => `• ${c}`).join('<br>');
 
     card.innerHTML = `
-      <div class="script-header">
-        <div class="script-info">
-          <h3>${script.name}</h3>
-          <span class="script-game">${script.game}</span>
-          <span class="script-version">v${script.version}</span>
+      <div class="card-header">
+        <div class="card-title-section">
+          <h3 class="card-title">${script.name}</h3>
+          <span class="card-game">${script.game}</span>
+          <span class="card-version">v${script.version}</span>
         </div>
-        <span class="status-pill ${statusClass}">${script.status}</span>
+        <span class="status-badge ${statusClass}"><span class="status-dot"></span>${script.status}</span>
       </div>
-
-      <div class="script-changelog">
-        ${script.changelog.map(c => "• " + c).join(" · ")}
+      <p class="card-description">${changelogHTML}</p>
+      <div class="card-meta">
+        <span class="meta-item">updated ${formatDate(script.lastUpdated)}</span>
+        <span class="meta-item">id: ${script.id}</span>
       </div>
-
-      <div class="script-meta">
-        <span>Updated: ${formatDate(script.lastUpdated)}</span>
-      </div>
-
-      <div class="loadstring-box">
+      <div class="card-loadstring">
         <div class="loadstring-header">
-          <span>loadstring</span>
-          <button class="loadstring-copy-btn" data-loadstring="${script.loadstring}" title="Copy">copy</button>
+          <span class="loadstring-label">loadstring</span>
+          <button class="loadstring-copy-btn" data-loadstring="${script.loadstring}">copy</button>
         </div>
         <code class="loadstring-code">${script.loadstring}</code>
       </div>
-
-      <ul class="script-features">
-        ${featuresHTML}
-      </ul>
-
-      <div class="script-actions">
+      <div class="card-tags">${tagsHTML}</div>
+      <div class="card-actions">
         <button class="btn btn-copy" data-loadstring="${script.loadstring}">Copy Loadstring</button>
-        <a href="https://github.com/akiradv/scriptsroblox/blob/main/scripts/${script.id}p.lua" target="_blank" class="btn btn-github">View on GitHub</a>
+        <a class="btn btn-github" href="${getGitHubUrl(script)}" target="_blank" rel="noopener">View on GitHub</a>
       </div>
     `;
 
@@ -88,15 +85,13 @@ function renderScripts() {
 
   document.querySelectorAll('.btn-copy').forEach(button => {
     button.addEventListener('click', function() {
-      const loadstring = this.getAttribute('data-loadstring');
-      copyToClipboard(loadstring);
+      copyToClipboard(this.getAttribute('data-loadstring'));
     });
   });
 
   document.querySelectorAll('.loadstring-copy-btn').forEach(button => {
     button.addEventListener('click', function() {
-      const loadstring = this.getAttribute('data-loadstring');
-      copyToClipboard(loadstring);
+      copyToClipboard(this.getAttribute('data-loadstring'));
     });
   });
 }
