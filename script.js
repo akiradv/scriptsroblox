@@ -8,6 +8,7 @@ async function loadScripts() {
     BOT_Data = await response.json();
     BOT_Scripts = BOT_Data.scripts.filter(s => s.available);
     renderScripts();
+    renderRoadmap();
   } catch (err) {
     console.error("failed to load scripts.json", err);
     document.getElementById('scripts-container').innerHTML = '<p>failed to load scripts. check back later.</p>';
@@ -94,6 +95,27 @@ function renderScripts() {
       copyToClipboard(this.getAttribute('data-loadstring'));
     });
   });
+}
+
+function renderRoadmap() {
+  if (!BOT_Data || !BOT_Data.roadmap) return;
+  
+  const groups = {
+    developing: document.getElementById('roadmap-developing'),
+    planned: document.getElementById('roadmap-planned')
+  };
+  
+  for (const key in groups) {
+    const container = groups[key];
+    if (!container) continue;
+    container.innerHTML = '';
+    (BOT_Data.roadmap[key] || []).forEach(function(item) {
+      const el = document.createElement('div');
+      el.className = 'roadmap-item';
+      el.textContent = item;
+      container.appendChild(el);
+    });
+  }
 }
 
 function copyToClipboard(text) {
