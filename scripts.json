@@ -4,11 +4,11 @@
   "scripts": [
     {
       "id": "ftf",
-      "name": "FTF Premium Hub",
+      "name": "FTF Hub",
       "game": "Flee the Facility",
-      "version": "1.2.9",
+      "version": "1.4.0",
       "status": "Stable",
-      "lastUpdated": "2026-09-28",
+      "lastUpdated": "2026-10-09",
       "available": true,
       "loadstring": "loadstring(game:HttpGet('https://akiradv.github.io/scriptsroblox/scripts/ftfp.lua'))()",
       "features": [
@@ -28,54 +28,42 @@
         "Join Another Server"
       ],
       "changelog": [
-        "v1.2.9: Fixed closet teleport using GetBoundingBox(), Fixed Anti-Fail/Auto-Hack using 0.1s loop (again), fixed Computer ESP using BrickColor and full English translation"
+        "v1.4.0: Rebranded to FTF Hub · Migrated to Eazy UI Library · Auto-save configs · 11 themes · Keybind support"
       ]
     },
     {
-      "id": "lt2",
-      "name": "LT2 Premium Hub",
-      "game": "Lumber Tycoon 2",
-      "version": "0.0.0",
-      "status": "Alpha",
-      "lastUpdated": "2026-09-28",
-      "available": false,
-      "loadstring": "",
-      "features": [],
-      "changelog": []
-    },
-    {
-      "id": "99n",
-      "name": "99 Nights Hub",
-      "game": "99 Nights in the Forest",
-      "version": "1.1.0",
-      "status": "Beta",
-      "lastUpdated": "2026-09-28",
-      "available": false,
-      "loadstring": "",
+      "id": "ml",
+      "name": "Muscle Legends Hub",
+      "game": "Muscle Legends",
+      "version": "1.0.3",
+      "status": "Stable",
+      "lastUpdated": "2026-10-09",
+      "available": true,
+      "loadstring": "loadstring(game:HttpGet('https://akiradv.github.io/scriptsroblox/scripts/ml.lua'))()",
       "features": [
-        "Auto Tree Farm",
-        "Cook All Meat",
-        "Kill All Rabbits/Wolves",
-        "Player ESP (Green)",
-        "Item ESP (Yellow)",
-        "Hitbox Expander (wolves/rabbits/cultists)",
-        "WalkSpeed/JumpPower",
-        "Noclip",
-        "Fast Interact",
-        "Teleport to Camp",
-        "Bring Everything",
-        "Bring Item",
-        "Teleport to Item",
-        "Anti-AFK"
+        "Auto Train (all exercises simultaneously)",
+        "Auto Weight, Pushups, Situps, Handstands",
+        "Speed Grind (maximum strength gain)",
+        "Auto Collect Chests & Gems",
+        "Auto Rebirth (when eligible)",
+        "Fast Punch (0.065s attack speed)",
+        "Auto Kill Players (with whitelist)",
+        "Kill Target Player (focused elimination)",
+        "God Mode (invincible position)",
+        "Anti-Fling (knockback prevention)",
+        "Walk on Water",
+        "FE Invisible",
+        "15+ Teleport locations",
+        "Anti-AFK",
+        "Session stats tracking"
       ],
       "changelog": [
-        "v1.1.0: Added Auto Tree Farm, Cook All Meat, Kill All Rabbits/Wolves, Player/Item ESP, Hitbox Expander, WalkSpeed/JumpPower, Noclip, Fast Interact, Teleport to Camp, Bring Everything",
-        "v1.0.0: Initial release with Bring Item, Teleport to Item/Campfire, Anti-AFK"
+        "v1.0.3: Initial release · Auto Train, Auto Kill, God Mode, Teleports, Anti-Fling and more · Built on Eazy UI v0.9.35"
       ]
     }
   ],
   "roadmap": {
-    "developing": ["Muscle Legends Hub", "Murder Mystery 2"],
-    "planned": ["Hide And Seek", "Tower of Hell", "99 Nights In the Forest", "Arsenal", "Piggy"]
+    "developing": ["Murder Mystery 2"],
+    "planned": ["Hide And Seek", "Tower of Hell", "Arsenal", "Piggy", "99 Nights In the Forest"]
   }
 }
