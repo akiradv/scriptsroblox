@@ -13,6 +13,7 @@
       "available": true,
       "description": "Quality-of-life hub for Flee the Facility: six ESPs, teleports, anti-fail hack with double server-side protection and anti-AFK.",
       "loadstring": "loadstring(game:HttpGet('https://akiradv.github.io/scriptsroblox/scripts/ftfp.lua'))()",
+      "tags": ["ESP", "Teleport", "Utility"],
       "features": [
         "Player ESP",
         "Computer ESP",
@@ -44,6 +45,7 @@
       "available": true,
       "description": "Grinding and combat suite for Muscle Legends: auto train, auto kill with whitelist, god mode and 15+ teleports.",
       "loadstring": "loadstring(game:HttpGet('https://akiradv.github.io/scriptsroblox/scripts/ml.lua'))()",
+      "tags": ["Farm", "Combat", "Teleport"],
       "features": [
         "Auto Train (all exercises)",
         "Speed Grind",
@@ -64,10 +66,43 @@
       "changelog": [
         "v1.0.3: Initial release · Auto Train, Auto Kill, God Mode, Teleports, Anti-Fling and more · Built on Eazy UI v0.9.35"
       ]
+    },
+    {
+      "id": "mm2",
+      "name": "MM2 Hub",
+      "game": "Murder Mystery 2",
+      "placeId": 142823291,
+      "version": "1.0.0",
+      "status": "Stable",
+      "lastUpdated": "2026-10-12",
+      "available": true,
+      "description": "Combat, role detection and coin farming suite for Murder Mystery 2. Aim lock, silent aim, role ESP and an auto coin farm built to run quietly without tripping server checks.",
+      "loadstring": "loadstring(game:HttpGet('https://akiradv.github.io/scriptsroblox/scripts/mm2.lua'))()",
+      "tags": ["Combat", "ESP", "Farm", "Movement"],
+      "features": [
+        "Aim Lock (smooth, FOV, bone selection)",
+        "Trigger Bot",
+        "Silent Aim",
+        "Auto Kill Murderer (through walls)",
+        "Auto Knife Throw",
+        "Kill Everyone (knife aura)",
+        "Player ESP (role-colored)",
+        "Name ESP with roles",
+        "Gun ESP · Coin ESP · Trap ESP",
+        "Beam to Murderer (path around walls)",
+        "Auto Coin Farm",
+        "Bag Full Actions",
+        "Fly · Noclip · Auto Evade",
+        "Anti-Void · Anti-Fling",
+        "Panic Key (P)"
+      ],
+      "changelog": [
+        "v1.0.0: Initial release · Undetectable coin farm · Full role detection with live updates · Aim lock, trigger bot and silent aim · Player ESP with role colors · Panic key (P) · Auto rejoin"
+      ]
     }
   ],
   "roadmap": {
-    "developing": ["Murder Mystery 2"],
-    "planned": ["Hide And Seek", "Tower of Hell", "Arsenal", "Piggy", "99 Nights In the Forest", "Flick"]
+    "developing": ["Piggy"],
+    "planned": ["Hide And Seek", "Tower of Hell", "Arsenal", "99 Nights In the Forest", "Flick"]
   }
 }
