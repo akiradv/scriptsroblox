@@ -99,10 +99,41 @@
       "changelog": [
         "v1.0.0: Initial release · Undetectable coin farm · Full role detection with live updates · Aim lock, trigger bot and silent aim · Player ESP with role colors · Panic key (P) · Auto rejoin"
       ]
+    },
+    {
+      "id": "flick",
+      "name": "Flick Hub",
+      "game": "Flick",
+      "placeId": 136801880565837,
+      "version": "1.2.4",
+      "status": "Stable",
+      "lastUpdated": "2026-10-14",
+      "available": true,
+      "description": "Aim and visual toolkit for Flick. Silent aim with wallcheck, trigger bot, rapid fire and a full player ESP with skeleton, corners and health readout.",
+      "loadstring": "loadstring(game:HttpGet('https://akiradv.github.io/scriptsroblox/scripts/flick.lua'))()",
+      "tags": ["Combat", "ESP", "Visuals"],
+      "features": [
+        "Silent Aim (body part selection)",
+        "Rapid Fire",
+        "Trigger Bot (adjustable delay)",
+        "Wallcheck",
+        "360 Aim",
+        "FOV Circle with custom color",
+        "Player ESP",
+        "Skeleton ESP",
+        "Box / Corners ESP",
+        "Health Bar + percentage",
+        "Name · Weapon · Distance",
+        "Rainbow ESP",
+        "Auto-save configs"
+      ],
+      "changelog": [
+        "v1.2.4: Initial release · Silent aim with body part targeting · Trigger bot with adjustable delay · Rapid fire · Wallcheck · 360 aim mode · Full player ESP with skeleton, corners, health and weapon info · Custom FOV circle · Auto-save configs"
+      ]
     }
   ],
   "roadmap": {
-    "developing": ["Piggy", "Flick"],
+    "developing": ["Piggy"],
     "planned": ["Hide And Seek", "Tower of Hell", "Arsenal", "99 Nights In the Forest"]
   }
 }
