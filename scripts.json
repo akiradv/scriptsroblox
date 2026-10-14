@@ -102,7 +102,7 @@
     }
   ],
   "roadmap": {
-    "developing": ["Piggy"],
-    "planned": ["Hide And Seek", "Tower of Hell", "Arsenal", "99 Nights In the Forest", "Flick"]
+    "developing": ["Piggy", "Flick"],
+    "planned": ["Hide And Seek", "Tower of Hell", "Arsenal", "99 Nights In the Forest"]
   }
 }
