@@ -39,7 +39,7 @@
       "name": "Muscle Legends Hub",
       "game": "Muscle Legends",
       "placeId": 3623096087,
-      "version": "1.0.3",
+      "version": "1.0.4",
       "status": "Stable",
       "lastUpdated": "2026-10-09",
       "available": true,
@@ -64,6 +64,7 @@
         "Session stats tracking"
       ],
       "changelog": [
+        "v1.0.4: Discord Prompt" 
         "v1.0.3: Initial release · Auto Train, Auto Kill, God Mode, Teleports, Anti-Fling and more · Built on Eazy UI v0.9.35"
       ]
     },
