@@ -1,8 +1,5 @@
--- Muscle Legends Hub v1.0.3
--- Built with Eazy UI v0.9.35
-
 local ML_EZ = loadstring(game:HttpGet("https://raw.githubusercontent.com/akiradv/eazyuilib/main/eazyui.lua"))()
-local ML_Version = "1.0.3"
+local ML_Version = "1.0.4"
 local ML_UIVersion = ML_EZ.Version
 
 local ML_Players = game:GetService("Players")
@@ -36,6 +33,10 @@ local ML_Window = ML_EZ:CreateWindow({
     LoadingTitle = "Muscle Legends Hub",
     LoadingSubtitle = "Loading modules...",
     LoadingDuration = 1.5,
+    Discord = {
+        Enabled = true,
+        Invite = "9VE4PXFDSg",
+    },
 })
 
 local ML_Tabs = {
@@ -161,7 +162,6 @@ ML_LocalPlayer.CharacterAdded:Connect(function(char)
     end
 end)
 
--- ===== MAIN =====
 ML_Tabs.Main:AddSection({ Title = "player" })
 
 ML_Tabs.Main:AddSlider({
@@ -420,7 +420,6 @@ ML_Tabs.Main:AddToggle({
     end
 })
 
--- ===== COMBAT =====
 ML_Tabs.Combat:AddSection({ Title = "punch" })
 
 ML_Tabs.Combat:AddButton({
@@ -728,7 +727,6 @@ ML_Tabs.Combat:AddButton({
     end
 })
 
--- ===== TELEPORT =====
 ML_Tabs.Teleport:AddSection({ Title = "all locations" })
 
 local ML_Locations = {
@@ -798,7 +796,6 @@ ML_Tabs.Teleport:AddButton({
     end
 })
 
--- ===== STATUS =====
 ML_Tabs.Status:AddSection({ Title = "session stats" })
 
 local function ML_Abbrev(value)
@@ -866,7 +863,6 @@ task.spawn(function()
     end)
 end)
 
--- ===== VISUAL =====
 ML_Tabs.Visual:AddSection({ Title = "performance" })
 
 ML_Tabs.Visual:AddButton({
@@ -901,7 +897,6 @@ ML_Tabs.Visual:AddDropdown({
     end
 })
 
--- ===== SERVER =====
 ML_Tabs.Server:AddSection({ Title = "server" })
 
 ML_Tabs.Server:AddButton({
@@ -955,7 +950,6 @@ ML_Tabs.Server:AddButton({
     end
 })
 
--- ===== MISC =====
 ML_Tabs.Misc:AddSection({ Title = "utility" })
 
 ML_Tabs.Misc:AddToggle({
@@ -1009,7 +1003,6 @@ ML_Tabs.Misc:AddButton({
     end
 })
 
--- ===== SETTINGS & CREDITS =====
 ML_Window:BuildConfigSection(ML_Tabs.Settings)
 
 ML_Tabs.Credits:AddSection({ Title = "about" })
