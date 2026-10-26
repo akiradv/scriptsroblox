@@ -9,7 +9,7 @@
       "placeId": 893973440,
       "version": "1.5.3",
       "status": "Stable",
-      "lastUpdated": "2026-10-18",
+      "lastUpdated": "2026-10-25",
       "available": true,
       "description": "Quality-of-life hub for Flee the Facility. Includes map and player ESPs, smart teleports, anti-fail minigame hack, anti-knockdown protection, and a dedicated Halloween event teleporter.",
       "loadstring": "loadstring(game:HttpGet('https://akiradv.github.io/scriptsroblox/scripts/ftfp.lua'))()",
@@ -35,7 +35,7 @@
         "Join Another Server"
       ],
       "changelog": [
-        "v1.5.3: New Anti-Knockdown · Fast Crawl · Improved Player Rescue · Halloween Candy Bucket teleport · PC teleport anti-cheat bypass",
+        "v1.5.3: Added Anti-Knockdown · Fast Crawl · Teleport to Rescue players · Halloween Event: Teleport to Candy Bucket · Anti-Cheat Bypass",
         "v1.4.0: Rebranded to FTF Hub · Migrated to Eazy UI Library · Auto-save configs · 11 themes · Keybind support"
       ]
     },
@@ -78,9 +78,9 @@
       "name": "MM2 Hub",
       "game": "Murder Mystery 2",
       "placeId": 142823291,
-      "version": "1.0.0",
+      "version": "1.0.4",
       "status": "Stable",
-      "lastUpdated": "2026-10-12",
+      "lastUpdated": "2026-10-25",
       "available": true,
       "description": "Combat, role detection and coin farming suite for Murder Mystery 2. Aim lock, silent aim, role ESP and an auto coin farm built to run quietly without tripping server checks.",
       "loadstring": "loadstring(game:HttpGet('https://akiradv.github.io/scriptsroblox/scripts/mm2.lua'))()",
@@ -103,6 +103,7 @@
         "Panic Key (P)"
       ],
       "changelog": [
+        "v1.0.4: Fixed Auto Farm getting stuck when toggled repeatedly · Restored character states (PlatformStand, Noclip, Tweens) · Background thread conflict fixes",
         "v1.0.0: Initial release · Undetectable coin farm · Full role detection with live updates · Aim lock, trigger bot and silent aim · Player ESP with role colors · Panic key (P) · Auto rejoin"
       ]
     },
