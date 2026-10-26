@@ -15,7 +15,7 @@ if game.PlaceId ~= 142823291 then
     return
 end
 
-local SCRIPT_VERSION = "1.0.0"
+local SCRIPT_VERSION = "1.0.4"
 
 local Aim = { LockOn = false, Smooth = 8, Range = 500, Bone = "Head", Trigger = false, TriggerRange = 300, AutoFire = false, WallCheck = true, FOVCircle = false, FOVRadius = 120, AutoKill = false, AutoThrow = false }
 local Visual = {
@@ -40,6 +40,7 @@ local ESPS = {
     Box2D = false, DisplayName = false, Username = true, Avatar = false,
     Gun = false, Trap = false, Beam = false,
     Coin = false, CoinColor = Color3.fromRGB(255, 215, 0),
+    Candy = false, CandyColor = Color3.fromRGB(255, 105, 180),
 }
 local ROLE_COLORS = {
     Murderer = Color3.fromRGB(255, 0, 0),
@@ -49,7 +50,7 @@ local ROLE_COLORS = {
 }
 local Misc = { InfJump = false, AntiAFK = false, AutoGun = false, SilentAim = false, AntiVoid = false, Evade = false, PanicKey = true, AutoRejoin = false }
 local Movement = { Noclip = false, Fly = false, WalkSpeed = 16, JumpPower = 50, FlySpeed = 40, AntiFling = false }
-local Farm = { On = false, ResetBag = false, ShootBag = false, KillAllBag = false }
+local Farm = { On = false, Type = nil, ResetBag = false, ShootBag = false, KillAllBag = false }
 
 local FARM_SPEED = 23
 local PANIC_KEY = Enum.KeyCode.P
@@ -68,7 +69,7 @@ local S = {
     voidConn = nil, safeCF = nil, evadeBV = nil,
     beamSegs = {}, beamConn = nil, beamTick = 0,
     fovGui = nil,
-    highlights = {}, tags = {}, gunHL = nil, gunBB = nil, coinHLs = {},
+    highlights = {}, tags = {}, gunHL = nil, gunBB = nil, itemHLs = { Coin = {}, Candy = {} },
     antiFlingConns = {}, antiFlingOn = false,
     emoteTrack = nil, oldNamecall = nil,
     ffOrig = {}, auraAssets = {}, auraParts = {},
@@ -513,41 +514,140 @@ local function applyGunESP()
     end
 end
 
-local function applyCoinESP()
-    if not ESPS.Coin then
-        if S.coinHLs then
-            for _, hl in ipairs(S.coinHLs) do
-                if hl.Parent then hl:Destroy() end
+local function isTargetItem(obj, itemType)
+    if not obj or not itemType then return false end
+    if not obj:IsA("BasePart") then return false end
+    local id = obj:GetAttribute(itemType .. "ID") or obj:GetAttribute("ItemID") or obj:GetAttribute("CoinID")
+    if id == itemType or id == "Coin" or id == "Candy" then return true end
+    local n = obj.Name:lower()
+    if itemType == "Candy" and n:find("candy", 1, true) then return true end
+    if itemType == "Coin" and n:find("coin", 1, true) then return true end
+    return false
+end
+
+local function findTargetContainer(itemType)
+    if S.farm.container and S.farm.container.Parent then
+        return S.farm.container
+    end
+    S.farm.container = nil
+    local now = tick()
+    if now - S.farm.containerCheck < 1 then return nil end
+    S.farm.containerCheck = now
+    local namesToCheck = { "CoinContainer", "CandyContainer", "ItemContainer", "CandyBagContainer" }
+    for _, obj in ipairs(workspace:GetChildren()) do
+        if obj:IsA("Model") or obj:IsA("Folder") then
+            for _, name in ipairs(namesToCheck) do
+                local c = obj:FindFirstChild(name)
+                if c then
+                    S.farm.container = c
+                    return c
+                end
             end
         end
-        S.coinHLs = {}
+    end
+    for _, obj in ipairs(workspace:GetDescendants()) do
+        if obj.Name == "CoinContainer" or obj.Name == "CandyContainer" or obj.Name == "ItemContainer" then
+            S.farm.container = obj
+            return obj
+        end
+    end
+    if itemType == "Candy" then
+        for _, obj in ipairs(workspace:GetDescendants()) do
+            if obj:IsA("Model") and obj.Name:lower():find("candy") then
+                for _, child in ipairs(obj:GetChildren()) do
+                    if child:IsA("BasePart") then
+                        S.farm.container = obj
+                        return obj
+                    end
+                end
+            end
+        end
+    end
+    if itemType == "Coin" then
+        for _, obj in ipairs(workspace:GetDescendants()) do
+            if obj:IsA("Model") and obj.Name:lower():find("coin") then
+                for _, child in ipairs(obj:GetChildren()) do
+                    if child:IsA("BasePart") then
+                        S.farm.container = obj
+                        return obj
+                    end
+                end
+            end
+        end
+    end
+    return nil
+end
+
+local function isItemCollectible(item, itemType)
+    if not item or not itemType then return false end
+    if not isTargetItem(item, itemType) then return false end
+    if not item.CanTouch then return false end
+    if not (item:FindFirstChildWhichIsA("TouchTransmitter") or item:FindFirstChild("TouchInterest")) then return false end
+    if item.Transparency ~= 1 then return false end
+    return true
+end
+
+local function findNearestItem(container, itemType)
+    if not container or not itemType then return nil, math.huge end
+    local hrp = HRP()
+    if not hrp then return nil, math.huge end
+    local best, bd = nil, math.huge
+    for _, item in ipairs(container:GetDescendants()) do
+        if isItemCollectible(item, itemType) then
+            local d = (hrp.Position - item.Position).Magnitude
+            if d < bd then bd = d best = item end
+        end
+    end
+    return best, bd
+end
+
+local function countItems(container, itemType)
+    if not container or not itemType then return 0, 0 end
+    local total, collectible = 0, 0
+    for _, item in ipairs(container:GetDescendants()) do
+        if isTargetItem(item, itemType) then
+            total = total + 1
+            if isItemCollectible(item, itemType) then collectible = collectible + 1 end
+        end
+    end
+    return total, collectible
+end
+
+local function clearItemHL(itemType)
+    if not S.itemHLs[itemType] then return end
+    for _, hl in ipairs(S.itemHLs[itemType]) do
+        if hl.Parent then hl:Destroy() end
+    end
+    S.itemHLs[itemType] = {}
+end
+
+local function applyItemESP(itemType)
+    local isEnabled = (itemType == "Coin" and ESPS.Coin) or (itemType == "Candy" and ESPS.Candy)
+    local color = (itemType == "Coin" and ESPS.CoinColor) or (itemType == "Candy" and ESPS.CandyColor)
+    if not isEnabled then
+        clearItemHL(itemType)
         return
     end
-    local container = S.farm.container
-    if not container or not container.Parent then
-        for _, obj in ipairs(workspace:GetChildren()) do
-            if obj:IsA("Model") then
-                local c = obj:FindFirstChild("CoinContainer")
-                if c then container = c break end
-            end
-        end
+    local container = findTargetContainer(itemType)
+    if not container then
+        clearItemHL(itemType)
+        return
     end
-    if not container then return end
-    for _, coin in ipairs(container:GetDescendants()) do
-        if coin:IsA("BasePart") and coin:GetAttribute("CoinID") == "Coin" then
-            local hl = coin:FindFirstChild("CoinESP_HL")
+    for _, item in ipairs(container:GetDescendants()) do
+        if isTargetItem(item, itemType) then
+            local hl = item:FindFirstChild("ESP_HL")
             if not hl then
                 hl = Instance.new("Highlight")
-                hl.Name = "CoinESP_HL"
-                hl.Adornee = coin
+                hl.Name = "ESP_HL"
+                hl.Adornee = item
                 hl.FillTransparency = 0.3
                 hl.OutlineTransparency = 0
                 hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-                hl.Parent = coin
-                table.insert(S.coinHLs, hl)
+                hl.Parent = item
+                table.insert(S.itemHLs[itemType], hl)
             end
-            hl.FillColor = ESPS.CoinColor
-            hl.OutlineColor = ESPS.CoinColor
+            hl.FillColor = color
+            hl.OutlineColor = color
         end
     end
 end
@@ -727,7 +827,8 @@ function refreshESP()
         if p ~= LocalPlayer then applyESP(p) end
     end
     applyGunESP()
-    applyCoinESP()
+    applyItemESP("Coin")
+    applyItemESP("Candy")
 end
 
 local function resetRound()
@@ -786,7 +887,7 @@ local function setupRoundListeners()
     local coinEvent = gp:FindFirstChild("CoinCollected")
     if coinEvent then
         coinEvent.OnClientEvent:Connect(function(typ, collected, total)
-            if typ == "Coin" or typ == nil then
+            if typ == Farm.Type or typ == nil then
                 S.farm.collected = tonumber(collected) or S.farm.collected
                 S.farm.total = tonumber(total) or S.farm.total
                 if S.farm.total > 0 and S.farm.collected >= S.farm.total then
@@ -1668,89 +1769,17 @@ local function applyCC()
     S.ccEffect = cc
 end
 
-local function findCoinContainer()
-    if S.farm.container and S.farm.container.Parent then
-        return S.farm.container
-    end
-    S.farm.container = nil
-    local now = tick()
-    if now - S.farm.containerCheck < 1 then return nil end
-    S.farm.containerCheck = now
-    for _, obj in ipairs(workspace:GetChildren()) do
-        if obj:IsA("Model") then
-            local c = obj:FindFirstChild("CoinContainer")
-            if c then
-                S.farm.container = c
-                return c
-            end
-            for _, sub in ipairs(obj:GetChildren()) do
-                local c2 = sub:FindFirstChild("CoinContainer")
-                if c2 then
-                    S.farm.container = c2
-                    return c2
-                end
-            end
-        end
-    end
-    local ok, result = pcall(function()
-        for _, obj in ipairs(workspace:GetDescendants()) do
-            if obj.Name == "CoinContainer" then
-                return obj
-            end
-        end
-        return nil
-    end)
-    if ok and result then
-        S.farm.container = result
-        return result
-    end
-    return nil
-end
-local function isCoinCollectible(coin)
-    if not coin:IsA("BasePart") then return false end
-    if coin:GetAttribute("CoinID") ~= "Coin" then return false end
-    if not coin.CanTouch then return false end
-    if not (coin:FindFirstChildWhichIsA("TouchTransmitter") or coin:FindFirstChild("TouchInterest")) then return false end
-    if coin.Transparency ~= 1 then return false end
-    return true
-end
-local function findNearestCoin(container)
-    if not container then return nil, math.huge end
-    local hrp = HRP()
-    if not hrp then return nil, math.huge end
-    local best, bd = nil, math.huge
-    for _, coin in ipairs(container:GetDescendants()) do
-        if isCoinCollectible(coin) then
-            local d = (hrp.Position - coin.Position).Magnitude
-            if d < bd then bd = d best = coin end
-        end
-    end
-    return best, bd
-end
-local function countCoins(container)
-    if not container then return 0, 0 end
-    local total, collectible = 0, 0
-    for _, coin in ipairs(container:GetDescendants()) do
-        if coin:IsA("BasePart") and coin:GetAttribute("CoinID") == "Coin" then
-            total = total + 1
-            if isCoinCollectible(coin) then collectible = collectible + 1 end
-        end
-    end
-    return total, collectible
-end
 local function restoreNormalGravity()
     local hrp = HRP()
     if not hrp then return end
-    for _, child in ipairs(hrp:GetChildren()) do
-        if child:IsA("BodyVelocity") or child:IsA("BodyGyro") or child:IsA("BodyPosition") or child:IsA("BodyThrust") or child:IsA("BodyForce") then
-            child:Destroy()
-        end
-    end
+    local g = hrp:FindFirstChild("FarmGravity")
+    if g then g:Destroy() end
 end
 local function addFarmGravity()
     local hrp = HRP()
     if not hrp then return end
-    if hrp:FindFirstChild("FarmGravity") then hrp.FarmGravity:Destroy() end
+    local existing = hrp:FindFirstChild("FarmGravity")
+    if existing then existing:Destroy() end
     local bp = Instance.new("BodyPosition")
     bp.Name = "FarmGravity"
     bp.MaxForce = Vector3.new(0, math.huge, 0)
@@ -1760,8 +1789,9 @@ local function addFarmGravity()
     bp.Parent = hrp
 end
 local function farmRestoreParts()
+    if next(S.farm.orig) == nil then return end
     local char = LocalPlayer.Character
-    if not char then return end
+    if not char then S.farm.orig = {} return end
     for part, data in pairs(S.farm.orig) do
         if part and part.Parent then
             part.CanCollide = data.CanCollide
@@ -1784,12 +1814,13 @@ local function farmStartNoclip()
         end
     end)
 end
+
 function stopFarming()
-    if not S.farm.active then return end
-    S.farm.active = false
-    if S.farm.tween then S.farm.tween:Cancel() S.farm.tween = nil end
     if S.farm.holdConn then S.farm.holdConn:Disconnect() S.farm.holdConn = nil end
+    if S.farm.tween then pcall(function() S.farm.tween:Cancel() end) S.farm.tween = nil end
     farmStopNoclip()
+    if not (S.farm.active or S.farm.laid) then return end
+    S.farm.active = false
     farmRestoreParts()
     local hrp = HRP()
     if hrp and S.farm.laid then
@@ -1807,6 +1838,7 @@ function stopFarming()
     end
     restoreNormalGravity()
 end
+
 local function startFarming()
     if S.farm.active then return end
     local hrp = HRP()
@@ -1833,58 +1865,61 @@ end
 task.spawn(function()
     while true do
         RunService.Heartbeat:Wait()
-        if Farm.On and S.roundActive and not S.farm.allDone and LocalPlayer:GetAttribute("Alive") ~= false then
-            local container = findCoinContainer()
-            local coin, dist = findNearestCoin(container)
-            if coin then
-                if not S.farm.active then startFarming() end
-                local hrp = HRP()
-                local hum = Hum()
-                if hrp and hum then
-                    hrp.Velocity = Vector3.zero
-                    hrp.RotVelocity = Vector3.zero
-                    local target = CFrame.new(coin.Position - Vector3.new(0, 2.5, 0)) * CFrame.Angles(math.rad(90), 0, 0)
-                    farmStartNoclip()
-                    if S.farm.tween then S.farm.tween:Cancel() end
-                    local tweenTime = math.max(dist / FARM_SPEED, 0.15)
-                    S.farm.tween = TweenService:Create(hrp, TweenInfo.new(tweenTime, Enum.EasingStyle.Linear, Enum.EasingDirection.Out), { CFrame = target })
-                    S.farm.tween:Play()
-                    if S.farm.holdConn then S.farm.holdConn:Disconnect() end
-                    S.farm.holdConn = RunService.Heartbeat:Connect(function()
-                        if not Farm.On or not hrp.Parent then return end
+        pcall(function()
+            local farmType = Farm.Type
+            if Farm.On and farmType and not S.farm.allDone and LocalPlayer:GetAttribute("Alive") ~= false then
+                local container = findTargetContainer(farmType)
+                local item, dist = findNearestItem(container, farmType)
+                if item and Farm.On and Farm.Type == farmType then
+                    if not S.farm.active then startFarming() end
+                    local hrp = HRP()
+                    local hum = Hum()
+                    if hrp and hum then
                         hrp.Velocity = Vector3.zero
                         hrp.RotVelocity = Vector3.zero
-                        local g = hrp:FindFirstChild("FarmGravity")
-                        if g and g:IsA("BodyPosition") then g.Position = hrp.Position end
-                        local h = Hum()
-                        if h then h.PlatformStand = true end
-                    end)
-                    task.wait(tweenTime + 0.08)
-                    if coin and coin.Parent and isCoinCollectible(coin) then
-                        local d = (hrp.Position - coin.Position).Magnitude
-                        if d <= 4 then
-                            pcall(function() firetouchinterest(hrp, coin, 0) end)
-                            task.wait(0.03)
-                            pcall(function() firetouchinterest(hrp, coin, 1) end)
+                        local target = CFrame.new(item.Position - Vector3.new(0, 2.5, 0)) * CFrame.Angles(math.rad(90), 0, 0)
+                        farmStartNoclip()
+                        if S.farm.tween then S.farm.tween:Cancel() end
+                        local tweenTime = math.max(dist / FARM_SPEED, 0.15)
+                        S.farm.tween = TweenService:Create(hrp, TweenInfo.new(tweenTime, Enum.EasingStyle.Linear, Enum.EasingDirection.Out), { CFrame = target })
+                        S.farm.tween:Play()
+                        if S.farm.holdConn then S.farm.holdConn:Disconnect() end
+                        S.farm.holdConn = RunService.Heartbeat:Connect(function()
+                            if not Farm.On or not hrp.Parent then return end
+                            hrp.Velocity = Vector3.zero
+                            hrp.RotVelocity = Vector3.zero
+                            local g = hrp:FindFirstChild("FarmGravity")
+                            if g and g:IsA("BodyPosition") then g.Position = hrp.Position end
+                            local h = Hum()
+                            if h then h.PlatformStand = true end
+                        end)
+                        task.wait(tweenTime + 0.08)
+                        if Farm.On and Farm.Type == farmType and item and item.Parent and isItemCollectible(item, farmType) then
+                            local d = (hrp.Position - item.Position).Magnitude
+                            if d <= 4 then
+                                pcall(function() firetouchinterest(hrp, item, 0) end)
+                                task.wait(0.03)
+                                pcall(function() firetouchinterest(hrp, item, 1) end)
+                            end
+                        end
+                        local checkStart = tick()
+                        while Farm.On and Farm.Type == farmType and item and item.Parent and isItemCollectible(item, farmType) and (tick() - checkStart) < 1.5 and LocalPlayer:GetAttribute("Alive") ~= false do
+                            RunService.Heartbeat:Wait()
+                        end
+                        if S.farm.holdConn then S.farm.holdConn:Disconnect() S.farm.holdConn = nil end
+                        if S.farm.tween then S.farm.tween:Cancel() S.farm.tween = nil end
+                        if hrp.Parent then
+                            hrp.Velocity = Vector3.zero
+                            hrp.RotVelocity = Vector3.zero
                         end
                     end
-                    local checkStart = tick()
-                    while coin and coin.Parent and isCoinCollectible(coin) and (tick() - checkStart) < 1.5 and Farm.On and S.roundActive and LocalPlayer:GetAttribute("Alive") ~= false do
-                        RunService.Heartbeat:Wait()
-                    end
-                    if S.farm.holdConn then S.farm.holdConn:Disconnect() S.farm.holdConn = nil end
-                    if S.farm.tween then S.farm.tween:Cancel() S.farm.tween = nil end
-                    if hrp.Parent then
-                        hrp.Velocity = Vector3.zero
-                        hrp.RotVelocity = Vector3.zero
-                    end
+                else
+                    stopFarming()
                 end
             else
                 stopFarming()
             end
-        else
-            stopFarming()
-        end
+        end)
     end
 end)
 
@@ -2001,6 +2036,32 @@ local function stopVoid()
     if S.voidConn then S.voidConn:Disconnect() S.voidConn = nil end
     S.safeCF = nil
 end
+
+local function getBestEvadePoint(myPos, mPos, mChar)
+    local bestPoint = nil
+    local bestScore = -math.huge
+    local myChar = LocalPlayer.Character
+    for i = 1, 24 do
+        local angle = (i / 24) * math.pi * 2
+        local offset = Vector3.new(math.cos(angle), 0, math.sin(angle)) * 40
+        local candidate = myPos + offset
+        local params = RaycastParams.new()
+        params.FilterType = Enum.RaycastFilterType.Exclude
+        params.FilterDescendantsInstances = { myChar, mChar }
+        local res = workspace:Raycast(myPos, candidate - myPos, params)
+        if not res then
+            local distToMurderer = (candidate - mPos).Magnitude
+            local distToMe = (candidate - myPos).Magnitude
+            local score = distToMurderer - (distToMe * 0.1)
+            if score > bestScore then
+                bestScore = score
+                bestPoint = candidate
+            end
+        end
+    end
+    return bestPoint
+end
+
 local function evadeTick()
     if not Misc.Evade or isLocalMurderer() then
         if S.evadeBV then S.evadeBV:Destroy() S.evadeBV = nil end
@@ -2013,20 +2074,26 @@ local function evadeTick()
         local mh = m.Character:FindFirstChild("HumanoidRootPart")
         if mh then
             local d = (my.Position - mh.Position).Magnitude
-            if d < 25 then
+            if d < 35 then
+                local evadePoint = getBestEvadePoint(my.Position, mh.Position, m.Character)
+                if not evadePoint then
+                    local away = (my.Position - mh.Position).Unit
+                    evadePoint = my.Position + away * 40
+                end
                 if not S.evadeBV or not S.evadeBV.Parent then
                     S.evadeBV = Instance.new("BodyVelocity")
                     S.evadeBV.MaxForce = Vector3.new(1e5, 1e5, 1e5)
                     S.evadeBV.Parent = my
                 end
-                local away = (my.Position - mh.Position).Unit
-                S.evadeBV.Velocity = away * 70
+                local dir = (evadePoint - my.Position).Unit
+                S.evadeBV.Velocity = dir * 50
                 return
             end
         end
     end
     if S.evadeBV then S.evadeBV:Destroy() S.evadeBV = nil end
 end
+
 local function startAntiFling()
     if S.antiFlingOn then return end
     S.antiFlingOn = true
@@ -2584,11 +2651,19 @@ PT(ESPTab:AddToggle({ Title = "Gun ESP", Description = "Highlight and label the 
 end }))
 PT(ESPTab:AddToggle({ Title = "Coin ESP", Description = "Highlight every coin on the map", Flag = "CoinESP", Default = false, Callback = function(v)
     ESPS.Coin = v
-    applyCoinESP()
+    applyItemESP("Coin")
 end }))
 ESPTab:AddColorPicker({ Title = "Coin Color", Description = "Color used for coin highlights", Default = Color3.fromRGB(255, 215, 0), Flag = "CoinColor", Callback = function(c)
     ESPS.CoinColor = c
-    if ESPS.Coin then applyCoinESP() end
+    if ESPS.Coin then applyItemESP("Coin") end
+end })
+PT(ESPTab:AddToggle({ Title = "Candy ESP", Description = "Highlight every candy on the map", Flag = "CandyESP", Default = false, Callback = function(v)
+    ESPS.Candy = v
+    applyItemESP("Candy")
+end }))
+ESPTab:AddColorPicker({ Title = "Candy Color", Description = "Color used for candy highlights", Default = Color3.fromRGB(255, 105, 180), Flag = "CandyColor", Callback = function(c)
+    ESPS.CandyColor = c
+    if ESPS.Candy then applyItemESP("Candy") end
 end })
 PT(ESPTab:AddToggle({ Title = "Trap ESP", Description = "Highlight murderer traps in red", Flag = "TrapESP", Default = false, Callback = function(v) ESPS.Trap = v end }))
 PT(ESPTab:AddToggle({ Title = "Beam to Murderer", Description = "Path line that bends around walls", Flag = "Beam", Default = false, Callback = function(v)
@@ -2596,34 +2671,50 @@ PT(ESPTab:AddToggle({ Title = "Beam to Murderer", Description = "Path line that 
     if v then beamLoop() else beamStop() end
 end }))
 
-FarmTab:AddSection({ Title = "coin farm" })
-PT(FarmTab:AddToggle({ Title = "Farm Coins", Description = "Lie down, fly through walls and collect every coin", Flag = "FarmOn", Default = false, Callback = function(v)
-    Farm.On = v
-    if v then
-        S.farm.startTime = os.time()
-        S.farm.allDone = false
+FarmTab:AddSection({ Title = "coin & candy farm" })
+local coinFarmToggle, candyFarmToggle
+local function setFarm(type, state)
+    if state then
+        stopFarming()
+        Farm.On = true
+        Farm.Type = type
         S.farm.container = nil
         S.farm.containerCheck = 0
+        S.farm.allDone = false
+        S.farm.collected = 0
+        S.farm.total = 0
+        S.farm.startTime = os.time()
+        S.farm.bagBusy = false
+        if type == "Coin" and candyFarmToggle then candyFarmToggle:Set(false, true) end
+        if type == "Candy" and coinFarmToggle then coinFarmToggle:Set(false, true) end
         task.spawn(function()
             task.wait(0.3)
-            local c = findCoinContainer()
+            local c = findTargetContainer(type)
             if c then
-                local total, collectible = countCoins(c)
-                EZ:Notify({ Title = "Farm", Content = "Found " .. total .. " coins (" .. collectible .. " collectible).", Style = "Success", Duration = 3 })
+                local total, collectible = countItems(c, type)
+                EZ:Notify({ Title = "Farm", Content = "Found " .. total .. " " .. type:lower() .. "s (" .. collectible .. " collectible).", Style = "Success", Duration = 3 })
             else
-                EZ:Notify({ Title = "Farm", Content = "No CoinContainer found. Wait for the round to start.", Style = "Warning", Duration = 3 })
+                EZ:Notify({ Title = "Farm", Content = "No " .. type .. "Container found. Wait for the round to start.", Style = "Warning", Duration = 3 })
             end
         end)
     else
-        stopFarming()
+        if Farm.Type == type then
+            Farm.On = false
+            Farm.Type = nil
+            stopFarming()
+        end
     end
-end }))
+end
+
+coinFarmToggle = PT(FarmTab:AddToggle({ Title = "Farm Coins", Description = "Lie down, fly through walls and collect every coin", Flag = "FarmCoins", Default = false, Callback = function(v) setFarm("Coin", v) end }))
+candyFarmToggle = PT(FarmTab:AddToggle({ Title = "Farm Candy", Description = "Lie down, fly through walls and collect every candy", Flag = "FarmCandy", Default = false, Callback = function(v) setFarm("Candy", v) end }))
+
 FarmTab:AddSection({ Title = "bag full actions" })
 PT(FarmTab:AddToggle({ Title = "Reset When Bag Full", Description = "Innocent: respawn as soon as the bag is full", Flag = "BagReset", Default = false, Callback = function(v) Farm.ResetBag = v end }))
 PT(FarmTab:AddToggle({ Title = "Shoot Murderer When Bag Full", Description = "Sheriff: fire at the murderer when the bag is full", Flag = "BagShoot", Default = false, Callback = function(v) Farm.ShootBag = v end }))
 PT(FarmTab:AddToggle({ Title = "Kill All When Bag Full", Description = "Murderer: knife aura when the bag is full", Flag = "BagKillAll", Default = false, Callback = function(v) Farm.KillAllBag = v end }))
 FarmTab:AddSection({ Title = "live stats" })
-local statsPara = FarmTab:AddParagraph({ Title = "Live Stats", Content = "Status: Idle\nCoins: 0/0\nSession: 00:00:00\nRate: 0/h" })
+local statsPara = FarmTab:AddParagraph({ Title = "Live Stats", Content = "Status: Idle\nItems: 0/0\nSession: 00:00:00\nRate: 0/h" })
 task.spawn(function()
     while true do
         task.wait(1)
@@ -2634,7 +2725,7 @@ task.spawn(function()
             local ss = math.floor(elapsed % 60)
             local statusText = "Waiting"
             if S.farm.allDone then
-                statusText = "All coins collected"
+                statusText = "All items collected"
             elseif S.farm.active then
                 statusText = "Farming"
             end
@@ -2642,9 +2733,9 @@ task.spawn(function()
             if elapsed > 0 and S.farm.collected > 0 then
                 rate = math.floor((S.farm.collected / elapsed) * 3600)
             end
-            statsPara:Set(string.format("Status: %s\nCoins: %d/%d\nSession: %02d:%02d:%02d\nRate: %d/h", statusText, S.farm.collected, S.farm.total, hh, mm, ss, rate))
+            statsPara:Set(string.format("Status: %s\nItems: %d/%d\nSession: %02d:%02d:%02d\nRate: %d/h", statusText, S.farm.collected, S.farm.total, hh, mm, ss, rate))
         else
-            statsPara:Set("Status: Idle\nCoins: 0/0\nSession: 00:00:00\nRate: 0/h")
+            statsPara:Set("Status: Idle\nItems: 0/0\nSession: 00:00:00\nRate: 0/h")
         end
     end
 end)
@@ -2665,7 +2756,7 @@ PT(MovementTab:AddToggle({ Title = "Noclip", Description = "Walk through solid o
         if not S.farm.active then setNoClip(false) end
     end
 end }))
-PT(MovementTab:AddToggle({ Title = "Auto Evade Murderer", Description = "Run away automatically when the murderer gets close", Flag = "Evade", Default = false, Callback = function(v)
+PT(MovementTab:AddToggle({ Title = "Auto Evade Murderer", Description = "Run to the farthest point away from the murderer", Flag = "Evade", Default = false, Callback = function(v)
     Misc.Evade = v
     if not v and S.evadeBV then S.evadeBV:Destroy() S.evadeBV = nil end
 end }))
@@ -2909,7 +3000,7 @@ end)
 task.spawn(function()
     while true do
         task.wait(1)
-        if ESPS.PlayerESP or ESPS.NameESP or ESPS.Gun or ESPS.Coin then refreshESP() end
+        if ESPS.PlayerESP or ESPS.NameESP or ESPS.Gun or ESPS.Coin or ESPS.Candy then refreshESP() end
     end
 end)
 
