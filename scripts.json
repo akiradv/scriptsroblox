@@ -144,7 +144,7 @@
       "game": "Piggy",
       "placeId": 4623386862,
       "version": "1.1.6",
-      "working": false,
+      "working": true,
       "lastUpdated": "2026-10-29",
       "available": true,
       "description": "Survival and utility suite for Piggy. Includes a clean ESP for players and items, teleport to exit, god mode, fly, noclip, and an auto-evade system.",
