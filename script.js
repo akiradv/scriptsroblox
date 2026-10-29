@@ -21,11 +21,8 @@ function formatDate(dateString) {
     return BOT_Parts[2] + "/" + BOT_Parts[1] + "/" + BOT_Parts[0];
 }
 
-function getStatusClass(status) {
-    const s = status.toLowerCase();
-    if (s === "stable") return "status-stable";
-    if (s === "beta") return "status-beta";
-    if (s === "alpha") return "status-alpha";
+function getStatusClass(working) {
+    if (working === false) return "status-broken";
     return "status-stable";
 }
 
@@ -51,7 +48,9 @@ function renderScripts() {
         card.className = 'script-card';
         card.style.animationDelay = `${index * 0.08}s`;
 
-        const statusClass = getStatusClass(script.status);
+        const isWorking = script.working !== false;
+        const statusClass = getStatusClass(isWorking);
+        const statusText = isWorking ? "Working" : "Not Working";
 
         const features = script.features || [];
         const hiddenCount = Math.max(0, features.length - MAX_TAGS);
@@ -75,7 +74,7 @@ function renderScripts() {
                     <span class="card-game">${script.game}</span>
                     <span class="card-version">v${script.version}</span>
                 </div>
-                <span class="status-badge ${statusClass}"><span class="status-dot"></span>${script.status}</span>
+                <span class="status-badge ${statusClass}"><span class="status-dot"></span>${statusText}</span>
             </div>
             ${desc ? `<p class="card-description">${desc}</p>` : ''}
             <div class="card-meta">
