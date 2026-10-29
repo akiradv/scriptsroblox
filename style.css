@@ -31,9 +31,15 @@ body::before {
     --accent: #10b981;
     --accent-hover: #34d399;
     --accent-dim: rgba(16, 185, 129, 0.08);
-    --status-stable: #10b981;
-    --status-beta: #f59e0b;
-    --status-alpha: #ef4444;
+}
+
+.status-badge.status-broken {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+}
+
+.status-badge.status-broken .status-dot {
+    background-color: #ef4444; 
 }
 
 ::selection {
