@@ -8,7 +8,7 @@
       "game": "Flee the Facility",
       "placeId": 893973440,
       "version": "1.5.3",
-      "status": "Stable",
+      "working": true,
       "lastUpdated": "2026-10-25",
       "available": true,
       "description": "Quality-of-life hub for Flee the Facility. Includes map and player ESPs, smart teleports, anti-fail minigame hack, anti-knockdown protection, and a dedicated Halloween event teleporter.",
@@ -45,7 +45,7 @@
       "game": "Muscle Legends",
       "placeId": 3623096087,
       "version": "1.0.4",
-      "status": "Stable",
+      "working": true,
       "lastUpdated": "2026-10-18",
       "available": true,
       "description": "Grinding and combat suite for Muscle Legends: auto train, auto kill with whitelist, god mode and 15+ teleports.",
@@ -79,7 +79,7 @@
       "game": "Murder Mystery 2",
       "placeId": 142823291,
       "version": "1.0.4",
-      "status": "Stable",
+      "working": true,
       "lastUpdated": "2026-10-25",
       "available": true,
       "description": "Combat, role detection and coin farming suite for Murder Mystery 2. Aim lock, silent aim, role ESP and an auto coin farm built to run quietly without tripping server checks.",
@@ -113,7 +113,7 @@
       "game": "Flick",
       "placeId": 136801880565837,
       "version": "1.2.4",
-      "status": "Stable",
+      "working": true,
       "lastUpdated": "2026-10-14",
       "available": true,
       "description": "Aim and visual toolkit for Flick. Silent aim with wallcheck, trigger bot, rapid fire and a full player ESP with skeleton, corners and health readout.",
@@ -137,10 +137,42 @@
       "changelog": [
         "v1.2.4: Initial release · Silent aim with body part targeting · Trigger bot with adjustable delay · Rapid fire · Wallcheck · 360 aim mode · Full player ESP with skeleton, corners, health and weapon info · Custom FOV circle · Auto-save configs"
       ]
+    },
+    {
+      "id": "piggy",
+      "name": "Piggy Hub",
+      "game": "Piggy",
+      "placeId": 7141367842,
+      "version": "1.1.6",
+      "working": true,
+      "lastUpdated": "2026-10-29",
+      "available": true,
+      "description": "Survival and utility suite for Piggy. Includes a clean ESP for players and items, teleport to exit, god mode, fly, noclip, and an auto-evade system.",
+      "loadstring": "loadstring(game:HttpGet('https://akiradv.github.io/scriptsroblox/scripts/piggy.lua'))()",
+      "tags": ["ESP", "Teleport", "Movement", "Protection"],
+      "features": [
+        "Player ESP",
+        "Piggy & Bot ESP",
+        "Item & Exit ESP",
+        "Teleport to Exit",
+        "God Mode (Bots & Objects)",
+        "Auto Evade",
+        "Fly",
+        "Noclip",
+        "Anti-Void",
+        "Anti-Ragdoll",
+        "Anti-Slow",
+        "Anti-AFK",
+        "Panic Key"
+      ],
+      "changelog": [
+        "v1.1.6: Fixed Noclip hitbox issue · Removed broken Auto Disable God · Added warning to God Mode · UI keybind fixes · Mobile compatibility improvements",
+        "v1.1.5: Internal testing and bug fixes"
+      ]
     }
   ],
   "roadmap": {
-    "developing": ["Piggy"],
-    "planned": ["Hide And Seek", "Tower of Hell", "Arsenal", "99 Nights In the Forest", "Blade Ball", "Fisch"]
+    "developing": ["Hide And Seek"],
+    "planned": ["Tower of Hell", "Arsenal", "99 Nights In the Forest", "Blade Ball", "Fisch"]
   }
 }
