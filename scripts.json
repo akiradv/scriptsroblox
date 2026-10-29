@@ -148,7 +148,7 @@
       "lastUpdated": "2026-10-29",
       "available": true,
       "description": "Survival and utility suite for Piggy. Includes a clean ESP for players and items, teleport to exit, god mode, fly, noclip, and an auto-evade system.",
-      "loadstring": "loadstring(game:HttpGet('https://akiradv.github.io/scriptsroblox/scripts/piggy.lua'))()",
+      "loadstring": "loadstring(game:HttpGet('https://akiradv.github.io/scriptsroblox/scripts/pig.lua'))()",
       "tags": ["ESP", "Teleport", "Movement", "Protection"],
       "features": [
         "Player ESP",
