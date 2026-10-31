@@ -1,8 +1,9 @@
 -- scripts.dev universal loader
 local URL = "https://raw.githubusercontent.com/akiradv/scriptsroblox/main/scripts.json"
 local ID = game.PlaceId
+local RequestURL = URL .. "?t=" .. tostring(tick())
 
-local ok, raw = pcall(function() return game:HttpGet(URL) end)
+local ok, raw = pcall(function() return game:HttpGet(RequestURL) end)
 if not ok or not raw or #raw == 0 then
     warn("loader: failed to fetch scripts.json")
     return
@@ -38,7 +39,7 @@ end
 local match = map[ID]
 if match then
     local url = match.loadstring:match("https?://[^'\"]+")
-    local ok2, code = pcall(function() return game:HttpGet(url) end)
+    local ok2, code = pcall(function() return game:HttpGet(url .. "?t=" .. tostring(tick())) end)
     
     if ok2 and code and #code > 0 then
         local func, err = loadstring(code)
