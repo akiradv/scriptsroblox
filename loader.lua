@@ -20,17 +20,33 @@ if not scripts then
 end
 
 local map = {}
+local supportedScripts = {}
+
 for _, s in ipairs(scripts) do
-    if s.available and s.placeId and s.loadstring then
-        map[s.placeId] = s
+    if s.available and s.loadstring then
+        if s.placeIds then
+            for _, pid in ipairs(s.placeIds) do
+                map[pid] = s
+            end
+        elseif s.placeId then
+            map[s.placeId] = s
+        end
+        table.insert(supportedScripts, s)
     end
 end
 
 local match = map[ID]
 if match then
-    local ok2, code = pcall(function() return game:HttpGet(match.loadstring:match("https?://[^'\"]+")) end)
+    local url = match.loadstring:match("https?://[^'\"]+")
+    local ok2, code = pcall(function() return game:HttpGet(url) end)
+    
     if ok2 and code and #code > 0 then
-        loadstring(code)()
+        local func, err = loadstring(code)
+        if func then
+            func()
+        else
+            warn("loader: failed to compile script " .. match.name .. " - " .. tostring(err))
+        end
     else
         warn("loader: failed to download " .. match.name)
     end
@@ -59,7 +75,6 @@ bg.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 bg.BackgroundTransparency = 0.55
 bg.BorderSizePixel = 0
 bg.Parent = gui
-
 
 local card = Instance.new("Frame")
 card.Size = UDim2.fromOffset(360, 0)
@@ -166,7 +181,7 @@ listLayout.Padding = UDim.new(0, 6)
 listLayout.Parent = list
 
 local count = 0
-for placeId, s in pairs(map) do
+for _, s in ipairs(supportedScripts) do
     count = count + 1
     local item = Instance.new("Frame")
     item.Size = UDim2.new(1, 0, 0, 18)
@@ -251,7 +266,6 @@ UIS.InputBegan:Connect(function(i, p)
         task.delay(0.22, function() gui:Destroy() end)
     end
 end)
-
 
 task.delay(6, function()
     if gui.Parent then

@@ -142,7 +142,7 @@
       "id": "piggy",
       "name": "Piggy Hub",
       "game": "Piggy",
-      "placeId": 4623386862,
+      "placeIds": [4623386862, 6409649305],
       "version": "1.1.6",
       "working": true,
       "lastUpdated": "2026-10-29",
