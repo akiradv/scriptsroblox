@@ -169,10 +169,41 @@
         "v1.1.6: Fixed Noclip hitbox issue · Removed broken Auto Disable God · Added warning to God Mode · UI keybind fixes · Mobile compatibility improvements",
         "v1.1.5: Internal testing and bug fixes"
       ]
+    },
+    {
+      "id": "hide",
+      "name": "Hide and Seek Hub",
+      "game": "Hide and Seek Extreme",
+      "placeId": 205224386,
+      "version": "1.0.7",
+      "working": true,
+      "lastUpdated": "2026-10-30",
+      "available": true,
+      "description": "Visual and utility suite for Hide and Seek Extreme. Includes player/seeker ESP, credit farming, teleports, and movement modifiers.",
+      "loadstring": "loadstring(game:HttpGet('https://akiradv.github.io/scriptsroblox/scripts/hide.lua'))()",
+      "tags": ["ESP", "Teleport", "Hider", "Seeker"],
+      "features": [
+        "Player ESP (Red = IT)",
+        "Player Names & Distance",
+        "Credit ESP",
+        "Auto Collect Credits",
+        "Collect All Credits",
+        "Kill All (Seeker)",
+        "Touch All (Seeker)",
+        "Fly & Noclip",
+        "Infinite Jump",
+        "Teleport to Nearest Player (Non-IT)",
+        "Teleport to Seeker",
+        "Teleport to Sky Spot",
+        "Rejoin Server & Server Hop"
+      ],
+      "changelog": [
+        "v1.0.7: Initial release · Player, IT & Credit ESP · Auto Collect · Seeker Kill All · Smooth Fly & Noclip"
+      ]
     }
   ],
   "roadmap": {
-    "developing": ["Hide And Seek"],
+    "developing": [],
     "planned": ["Tower of Hell", "Arsenal", "99 Nights In the Forest", "Blade Ball", "Fisch"]
   }
 }
