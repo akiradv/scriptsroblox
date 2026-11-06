@@ -35,8 +35,8 @@
         "Join Another Server"
       ],
       "changelog": [
-        "v1.5.3: Added Anti-Knockdown · Fast Crawl · Teleport to Rescue players · Halloween Event: Teleport to Candy Bucket · Anti-Cheat Bypass",
-        "v1.4.0: Rebranded to FTF Hub · Migrated to Eazy UI Library · Auto-save configs · 11 themes · Keybind support"
+        "v1.5.3: Added Anti-Knockdown, Fast Crawl, Teleport to Rescue players, Halloween Event: Teleport to Candy Bucket, Anti-Cheat Bypass",
+        "v1.4.0: Rebranded to FTF Hub, Migrated to Eazy UI Library, Auto-save configs, 11 themes, Keybind support"
       ]
     },
     {
@@ -70,7 +70,7 @@
       ],
       "changelog": [
         "v1.0.4: Discord Prompt",
-        "v1.0.3: Initial release · Auto Train, Auto Kill, God Mode, Teleports, Anti-Fling and more · Built on Eazy UI v0.9.35"
+        "v1.0.3: Initial release, Auto Train, Auto Kill, God Mode, Teleports, Anti-Fling and more, Built on Eazy UI v0.9.35"
       ]
     },
     {
@@ -94,17 +94,17 @@
         "Kill Everyone (knife aura)",
         "Player ESP (role-colored)",
         "Name ESP with roles",
-        "Gun ESP · Coin ESP · Trap ESP",
+        "Gun ESP, Coin ESP, Trap ESP",
         "Beam to Murderer (path around walls)",
         "Auto Coin Farm",
         "Bag Full Actions",
-        "Fly · Noclip · Auto Evade",
-        "Anti-Void · Anti-Fling",
+        "Fly, Noclip, Auto Evade",
+        "Anti-Void, Anti-Fling",
         "Panic Key (P)"
       ],
       "changelog": [
-        "v1.0.4: Fixed Auto Farm getting stuck when toggled repeatedly · Restored character states (PlatformStand, Noclip, Tweens) · Background thread conflict fixes",
-        "v1.0.0: Initial release · Undetectable coin farm · Full role detection with live updates · Aim lock, trigger bot and silent aim · Player ESP with role colors · Panic key (P) · Auto rejoin"
+        "v1.0.4: Fixed Auto Farm getting stuck when toggled repeatedly, Restored character states (PlatformStand, Noclip, Tweens), Background thread conflict fixes",
+        "v1.0.0: Initial release, Undetectable coin farm, Full role detection with live updates, Aim lock, trigger bot and silent aim, Player ESP with role colors, Panic key (P), Auto rejoin"
       ]
     },
     {
@@ -130,12 +130,12 @@
         "Skeleton ESP",
         "Box / Corners ESP",
         "Health Bar + percentage",
-        "Name · Weapon · Distance",
+        "Name, Weapon, Distance",
         "Rainbow ESP",
         "Auto-save configs"
       ],
       "changelog": [
-        "v1.2.4: Initial release · Silent aim with body part targeting · Trigger bot with adjustable delay · Rapid fire · Wallcheck · 360 aim mode · Full player ESP with skeleton, corners, health and weapon info · Custom FOV circle · Auto-save configs"
+        "v1.2.4: Initial release, Silent aim with body part targeting, Trigger bot with adjustable delay, Rapid fire, Wallcheck, 360 aim mode, Full player ESP with skeleton, corners, health and weapon info, Custom FOV circle, Auto-save configs"
       ]
     },
     {
@@ -166,7 +166,7 @@
         "Panic Key"
       ],
       "changelog": [
-        "v1.1.6: Fixed Noclip hitbox issue · Removed broken Auto Disable God · Added warning to God Mode · UI keybind fixes · Mobile compatibility improvements",
+        "v1.1.6: Fixed Noclip hitbox issue, Removed broken Auto Disable God, Added warning to God Mode, UI keybind fixes, Mobile compatibility improvements",
         "v1.1.5: Internal testing and bug fixes"
       ]
     },
@@ -198,12 +198,41 @@
         "Rejoin Server & Server Hop"
       ],
       "changelog": [
-        "v1.0.7: Initial release · Player, IT & Credit ESP · Auto Collect · Seeker Kill All · Smooth Fly & Noclip"
+        "v1.0.7: Initial release, Player, IT & Credit ESP, Auto Collect, Seeker Kill All, Smooth Fly & Noclip"
+      ]
+    },
+    {
+      "id": "bladeball",
+      "name": "Blade Ball Hub",
+      "game": "Blade Ball",
+      "placeId": 13772394625,
+      "version": "1.1.57",
+      "working": true,
+      "lastUpdated": "2026-11-06",
+      "available": true,
+      "description": "High-performance combat and utility hub for Blade Ball. Features a highly accurate Auto Parry with BAC bypass, Auto Spam, Unlock All Cosmetics, and a pixel-perfect Combined ESP.",
+      "loadstring": "loadstring(game:HttpGet('https://akiradv.github.io/scriptsroblox/scripts/blade.lua'))()",
+      "tags": ["Combat", "ESP", "Utility", "Cosmetics"],
+      "features": [
+        "Auto Parry (Remote Event Hook / BAC Bypass)",
+        "Parry Modes (Remote / Keypress)",
+        "Auto Spam & Random Accuracy",
+        "Custom Parry Curves (Camera, Random, Legit, etc.)",
+        "Unlock All Cosmetics (Skins & Explosions)",
+        "Player ESP (Names, Distance, Highlights)",
+        "Ability ESP (Icons, English Translation, Pixel-Perfect Layout)",
+        "Movement Modifiers (WalkSpeed, JumpPower)",
+        "Fly",
+        "Headless & Korblox",
+        "Rejoin Server & Server Hop"
+      ],
+      "changelog": [
+        "v1.1.57: Optimized ESP memory usage (Weak Tables), Reduced UI redraws for zero lag, Pixel-perfect Combined ESP layout"
       ]
     }
   ],
   "roadmap": {
-    "developing": ["Blade Ball"],
-    "planned": ["Tower of Hell", "Arsenal", "99 Nights In the Forest", "Fisch"]
+    "developing": [],
+    "planned": ["Tower of Hell", "Arsenal", "99 Nights In the Forest", "Fisch","Prison Life", "Steal a Brainrot", ]
   }
 }
