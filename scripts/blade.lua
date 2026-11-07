@@ -1,5 +1,5 @@
 local BB_Eazy = loadstring(game:HttpGet("https://raw.githubusercontent.com/akiradv/eazyuilib/refs/heads/main/eazyui.lua"))()
-local BB_Version = "1.1.57"
+local BB_Version = "1.1.58"
 local BB_UIVersion = BB_Eazy.Version
 
 local BB_Players = cloneref(game:GetService("Players"))
@@ -113,22 +113,24 @@ local BB_AbilityTranslations = {
 
 local BB_Token
 local BB_TokenFound = false
-for _, Function in getgc(true) do
-    if type(Function) ~= 'function' or not debug.info(Function, 's'):find('PRY', 1, true) then
-        continue
-    end
-    for _, value in debug.getupvalues(Function) do
-        if type(value) == 'function' then
-            BB_Token = value
-            BB_TokenFound = true
-            break
+pcall(function()
+    for _, Function in getgc(true) do
+        if type(Function) ~= 'function' or not debug.info(Function, 's'):find('PRY', 1, true) then
+            continue
         end
+        for _, value in debug.getupvalues(Function) do
+            if type(value) == 'function' then
+                BB_Token = value
+                BB_TokenFound = true
+                break
+            end
+        end
+        if BB_Token then break end
     end
-    if BB_Token then break end
-end
+end)
 
 if not BB_TokenFound then
-    BB_Eazy:Notify({ Title = "Blade Ball Hub", Content = "Remote not found. Re-inject.", Style = "Error", Duration = 5 })
+    BB_Eazy:Notify({ Title = "Blade Ball Hub", Content = "Remote not found or executor not supported.", Style = "Error", Duration = 5 })
     return
 end
 
