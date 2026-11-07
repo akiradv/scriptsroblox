@@ -1,6 +1,7 @@
 -- scripts.dev universal loader
 local URL = "https://raw.githubusercontent.com/akiradv/scriptsroblox/main/scripts.json"
 local ID = game.PlaceId
+local UNIVERSE_ID = game.GameId
 local RequestURL = URL .. "?t=" .. tostring(tick())
 
 local ok, raw = pcall(function() return game:HttpGet(RequestURL) end)
@@ -27,16 +28,24 @@ for _, s in ipairs(scripts) do
     if s.available and s.loadstring then
         if s.placeIds then
             for _, pid in ipairs(s.placeIds) do
-                map[pid] = s
+                map["place_" .. tostring(pid)] = s
             end
-        elseif s.placeId then
-            map[s.placeId] = s
+        end
+        if s.placeId then
+            map["place_" .. tostring(s.placeId)] = s
+        end
+        if s.universeId then
+            map["universe_" .. tostring(s.universeId)] = s
         end
         table.insert(supportedScripts, s)
     end
 end
 
-local match = map[ID]
+local match = map["place_" .. tostring(ID)]
+if not match and UNIVERSE_ID and UNIVERSE_ID > 0 then
+    match = map["universe_" .. tostring(UNIVERSE_ID)]
+end
+
 if match then
     local url = match.loadstring:match("https?://[^'\"]+")
     local ok2, code = pcall(function() return game:HttpGet(url .. "?t=" .. tostring(tick())) end)
