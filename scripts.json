@@ -227,12 +227,38 @@
         "Rejoin Server & Server Hop"
       ],
       "changelog": [
-        "v1.1.57: Optimized ESP memory usage (Weak Tables), Reduced UI redraws for zero lag, Pixel-perfect Combined ESP layout"
+        "v1.1.57: Optimized ESP memory usage (Weak Tables), Reduced UI redraws for zero lag, Pixel-perfect Combined ESP Layout"
+      ]
+    },
+    {
+      "id": "lt2",
+      "name": "LT2 Hub",
+      "game": "Lumber Tycoon 2",
+      "placeId": 13822889,
+      "version": "1.1",
+      "working": true,
+      "lastUpdated": "2026-11-10",
+      "available": true,
+      "description": "The ultimate grinding suite for Lumber Tycoon 2. Features an advanced Auto Farm, instant Auto Sell, Free Land, Max Expand, and Axe Dupe.",
+      "loadstring": "loadstring(game:HttpGet('https://akiradv.github.io/scriptsroblox/scripts/lt2.lua'))()",
+      "tags": ["Farm", "Utility", "Teleport", "Dupe"],
+      "features": [
+        "Auto Farm (Advanced cutting and selling loop)",
+        "Instant Auto Sell (Vends all wood)",
+        "Free Land & Max Expand Land",
+        "Axe Dupe (60s cooldown)",
+        "Split All Wood & Bring All Logs",
+        "Teleports (All major locations)",
+        "Environment (Always Day/Night, No Fog, Shadows)",
+        "Fly (with Keybind), Noclip, Inf Jump"
+      ],
+      "changelog": [
+        "v1.1: Initial release, Advanced Auto Sell, Safe Tree Cutting, Axe Dupe, Free Land, Max Expand, Environment Mods"
       ]
     }
   ],
   "roadmap": {
-    "developing": ["Lumber Tycoon 2"],
-    "planned": ["Tower of Hell", "Arsenal", "99 Nights In the Forest", "Fisch", "Prison Life", "Steal a Brainrot","Rivals","BedWars", "Fish It"]
+    "developing": ["Tower of Hell"],
+    "planned": ["Arsenal", "99 Nights In the Forest", "Fisch", "Prison Life", "Steal a Brainrot","Rivals","BedWars", "Fish It"]
   }
 }
