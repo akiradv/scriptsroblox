@@ -235,7 +235,7 @@
       "name": "LT2 Hub",
       "game": "Lumber Tycoon 2",
       "placeId": 13822889,
-      "version": "1.1",
+      "version": "1.1.1",
       "working": true,
       "lastUpdated": "2026-11-10",
       "available": true,
@@ -253,6 +253,7 @@
         "Fly (with Keybind), Noclip, Inf Jump"
       ],
       "changelog": [
+        "v1.1.1: Added Discord Prompt",
         "v1.1: Initial release, Advanced Auto Sell, Safe Tree Cutting, Axe Dupe, Free Land, Max Expand, Environment Mods"
       ]
     }
