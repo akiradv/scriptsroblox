@@ -1,5 +1,5 @@
 local LT2_Eazy = loadstring(game:HttpGet("https://raw.githubusercontent.com/akiradv/eazyuilib/refs/heads/main/eazyui.lua"))()
-local LT2_Version = "1.1"
+local LT2_Version = "1.1.1"
 local LT2_UIVersion = LT2_Eazy.Version
 
 local LT2_Players = game:GetService("Players")
@@ -818,6 +818,10 @@ local LT2_Window = LT2_Eazy:CreateWindow({
     LoadingTitle = "LT2 Hub",
     LoadingSubtitle = "Loading...",
     LoadingDuration = 1.2,
+    Discord = {
+        Enabled = true,
+        Invite = "9VE4PXFDSg",
+    },
 })
 
 local LT2_Tabs = {
