@@ -3,10 +3,25 @@ const BOT_LOCALURL = "scripts.json";
 const BOT_CACHE_KEY = "scriptsdev:data:v1";
 const BOT_CACHE_TTL = 60 * 60 * 1000;
 
-const BOT_GAMEICONS_KEY = "scriptsdev:gameicons:v1";
-const BOT_GAMEICONS_TTL = 24 * 60 * 60 * 1000;
-const BOT_ROPROXY = "https://apis.roproxy.com/universes/v1/places/";
-const BOT_THUMBS = "https://thumbnails.roproxy.com/v1/games/icons?universeIds=";
+const BOT_GAMEICONS_KEY = "scriptsdev:gameicons:v5";
+const BOT_GAMEICONS_TTL = 6 * 60 * 60 * 1000;
+const BOT_FEEDS_KEY = "scriptsdev:feeds:v1";
+const BOT_FEEDS_TTL = 10 * 60 * 1000;
+const BOT_UNIVERSES_KEY = "scriptsdev:universes:v1";
+const BOT_UNIVERSES_TTL = 30 * 24 * 60 * 60 * 1000;
+const BOT_ICON_QS = "&size=256x256&format=Png&isCircular=false";
+
+const BOT_ICON_FEEDS = [
+    "https://thumbnails.roproxy.com/v1/games/icons?universeIds=",
+    "https://r.jina.ai/https://thumbnails.roblox.com/v1/games/icons?universeIds=",
+    "https://thumbnails.roblox.com/v1/games/icons?universeIds="
+];
+
+const BOT_UNIVERSE_FEEDS = [
+    "https://apis.roproxy.com/universes/v1/places/",
+    "https://r.jina.ai/https://apis.roblox.com/universes/v1/places/",
+    "https://apis.roblox.com/universes/v1/places/"
+];
 
 const BOT_TEAM_KEY = "scriptsdev:team:v2";
 const BOT_TEAM_TTL = 60 * 60 * 1000;
@@ -202,6 +217,54 @@ function buildChangelogEntry(line) {
     return '<div class="changelog-entry"><span class="changelog-version">' + version + '</span>' + list + '</div>';
 }
 
+function attachThumbLoader(card, script) {
+    const slot = card.querySelector('.game-icon');
+    if (!slot) return;
+
+    script.__slot = slot;
+
+    const existing = slot.querySelector('img[data-game-icon]');
+    if (!existing) return;
+
+    if (existing.complete && existing.naturalWidth > 0) {
+        existing.classList.add('is-loaded');
+        return;
+    }
+
+    existing.addEventListener('load', function () { existing.classList.add('is-loaded'); });
+    existing.addEventListener('error', function () {
+        existing.remove();
+        refreshThumb(script);
+    });
+}
+
+function setThumb(script, url) {
+    const slot = script.__slot;
+    if (!slot || !url) return;
+
+    let img = slot.querySelector('img[data-game-icon]');
+
+    if (!img) {
+        img = document.createElement('img');
+        img.alt = '';
+        img.width = 64;
+        img.height = 64;
+        img.decoding = 'async';
+        img.setAttribute('data-game-icon', script.id);
+        img.addEventListener('load', function () { img.classList.add('is-loaded'); });
+        img.addEventListener('error', function () {
+            img.remove();
+            refreshThumb(script);
+        });
+        slot.appendChild(img);
+    }
+
+    if (img.getAttribute('src') !== url) {
+        img.classList.remove('is-loaded');
+        img.setAttribute('src', url);
+    }
+}
+
 function renderScripts() {
     const container = document.getElementById('scripts-container');
     if (!container) return;
@@ -251,13 +314,15 @@ function renderScripts() {
               '</div></details>'
             : '';
 
-        const iconSrc = script.icon || ('assets/games/' + script.id + '.webp');
+        const iconSrc = script.icon || "";
         const iconFallback = String(script.game || script.name || "?").trim().charAt(0).toUpperCase();
 
         card.innerHTML =
             '<div class="card-header">' +
                 '<div class="game-icon" data-fallback="' + iconFallback + '">' +
-                    '<img src="' + iconSrc + '" alt="" width="64" height="64" loading="lazy" data-game-icon="' + script.id + '" onerror="this.remove()">' +
+                    (iconSrc
+                        ? '<img src="' + iconSrc + '" alt="" width="64" height="64" loading="lazy" data-game-icon="' + script.id + '">'
+                        : '') +
                 '</div>' +
                 '<div class="card-title-section">' +
                     '<h3 class="card-title">' + script.name + '</h3>' +
@@ -277,6 +342,8 @@ function renderScripts() {
             '</div>';
 
         container.appendChild(card);
+
+        attachThumbLoader(card, script);
     });
 
     resolveScriptIcons(BOT_Scripts).catch(function () {});
@@ -365,62 +432,226 @@ function samePlaceIds(a, b) {
     return true;
 }
 
-async function fetchGameIcon(script) {
-    const ids = placeIdsOf(script);
-    let universe = null;
+function iconKeyOf(script) {
+    const universe = script.__universe || script.universeId;
+    if (universe) return "u:" + universe;
+    return "p:" + placeIdsOf(script).join(",");
+}
 
-    for (const placeId of ids) {
-        const result = await fetchJSON(BOT_ROPROXY + placeId + "/universe").catch(function () { return null; });
-        if (result && result.universeId) {
-            universe = result;
+function dropIconCache(id) {
+    const cache = readGameIconCache();
+    if (!cache.map[id]) return;
+    delete cache.map[id];
+    writeStore(BOT_GAMEICONS_KEY, cache);
+}
+
+function parseLooseJSON(text) {
+    if (typeof text !== "string") return null;
+    const trimmed = text.trim();
+    try {
+        return JSON.parse(trimmed);
+    } catch (err) {
+        // some mirrors wrap the payload in extra text
+    }
+    const first = trimmed.search(/[\[{]/);
+    const last = Math.max(trimmed.lastIndexOf("}"), trimmed.lastIndexOf("]"));
+    if (first === -1 || last <= first) return null;
+    try {
+        return JSON.parse(trimmed.slice(first, last + 1));
+    } catch (err) {
+        return null;
+    }
+}
+
+async function fetchMirror(url) {
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) throw new Error("bad response");
+    const text = await res.text();
+    const data = parseLooseJSON(text);
+    if (!data) throw new Error("bad payload");
+    return data;
+}
+
+function hostOf(url) {
+    const match = String(url).match(/^https?:\/\/([^/]+)/);
+    return match ? match[1] : url;
+}
+
+function readFeedBreaker() {
+    const entry = readStore(BOT_FEEDS_KEY);
+    if (!entry || typeof entry !== "object" || !entry.map || typeof entry.map !== "object") {
+        return { map: {} };
+    }
+    return entry;
+}
+
+async function fetchFromFeeds(feeds, build, accept) {
+    const breaker = readFeedBreaker();
+    const now = Date.now();
+    let changed = false;
+
+    for (let i = 0; i < feeds.length; i++) {
+        const host = hostOf(feeds[i]);
+        const down = breaker.map[host];
+
+        if (down && now - down < BOT_FEEDS_TTL) continue;
+
+        try {
+            const data = await fetchMirror(build(feeds[i]));
+            if (down) {
+                delete breaker.map[host];
+                changed = true;
+            }
+            if (accept(data)) {
+                if (changed) writeStore(BOT_FEEDS_KEY, breaker);
+                return data;
+            }
+        } catch (err) {
+            breaker.map[host] = now;
+            changed = true;
+        }
+    }
+
+    if (changed) writeStore(BOT_FEEDS_KEY, breaker);
+    return null;
+}
+
+function readUniverseCache() {
+    const entry = readStore(BOT_UNIVERSES_KEY);
+    if (!entry || typeof entry !== "object" || !entry.map || typeof entry.map !== "object") {
+        return { map: {} };
+    }
+    return entry;
+}
+
+async function resolveUniverseId(script, cache) {
+    if (script.universeId) return String(script.universeId);
+
+    const places = placeIdsOf(script);
+    const now = Date.now();
+    let hit = null;
+    let fresh = false;
+
+    for (let i = 0; i < places.length; i++) {
+        const stored = cache.map[places[i]];
+        if (stored && stored.universeId && now - stored.at < BOT_UNIVERSES_TTL) {
+            hit = String(stored.universeId);
+            fresh = true;
             break;
         }
     }
 
-    if (!universe || !universe.universeId) throw new Error("no universe id");
+    if (hit) return hit;
 
-    const icons = await fetchJSON(BOT_THUMBS + universe.universeId + "&size=256x256&format=Png&isCircular=false");
-    const url = icons && icons.data && icons.data[0] ? icons.data[0].imageUrl : null;
-    if (!url) throw new Error("no thumbnail");
-    return url;
+    for (let i = 0; i < places.length; i++) {
+        const data = await fetchFromFeeds(
+            BOT_UNIVERSE_FEEDS,
+            function (feed) { return feed + places[i] + "/universe"; },
+            function (res) { return res && res.universeId; }
+        );
+        if (data) {
+            cache.map[places[i]] = { universeId: String(data.universeId), at: now };
+            cache.changed = true;
+            return String(data.universeId);
+        }
+    }
+
+    return null;
+}
+
+async function fetchGameIcons(universes) {
+    const query = universes.join(",");
+    const data = await fetchFromFeeds(
+        BOT_ICON_FEEDS,
+        function (feed) { return feed + query + BOT_ICON_QS; },
+        function (res) { return res && Array.isArray(res.data) && res.data.length > 0; }
+    );
+
+    if (!data) return {};
+
+    const found = {};
+    data.data.forEach(function (item) {
+        if (item && item.targetId && item.imageUrl) found[String(item.targetId)] = item.imageUrl;
+    });
+
+    return found;
 }
 
 async function resolveScriptIcons(scripts) {
-    const targets = scripts.filter(function (sc) { return placeIdsOf(sc).length > 0 && !sc.icon; });
-    if (targets.length === 0) return;
+    if (!scripts || scripts.length === 0) return;
 
     const cache = readGameIconCache();
-    const icons = cache.map;
+    const store = cache.map;
     const now = Date.now();
-
     const pending = [];
 
-    for (const script of targets) {
-        const cached = icons[script.id];
+    scripts.forEach(function (script) {
+        const cached = store[script.id];
+        const fresh = cached && now - cached.at < BOT_GAMEICONS_TTL;
+        const sameGame = cached && (cached.key === iconKeyOf(script) ||
+            samePlaceIds(cached.placeIds, placeIdsOf(script)));
 
-        if (cached && samePlaceIds(cached.placeIds, placeIdsOf(script)) && now - cached.at < BOT_GAMEICONS_TTL) {
+        if (fresh && sameGame && cached.url) {
             script.icon = cached.url;
-            continue;
+            setThumb(script, cached.url);
+            return;
         }
-
         pending.push(script);
-    }
+    });
 
     if (pending.length === 0) return;
 
-    await Promise.all(pending.map(async function (script) {
-        try {
-            const url = await fetchGameIcon(script);
-            script.icon = url;
-            icons[script.id] = { url: url, placeIds: placeIdsOf(script), at: Date.now() };
-            writeStore(BOT_GAMEICONS_KEY, cache);
+    const universeCache = readUniverseCache();
+    const resolved = [];
 
-            const img = document.querySelector('img[data-game-icon="' + script.id + '"]');
-            if (img && img.getAttribute("src") !== url) img.setAttribute("src", url);
-        } catch (err) {
-            // keep the bundled icon, try again on the next visit
-        }
+    if (pending.length > 0) {
+        resolved.push(await resolveUniverseId(pending[0], universeCache).catch(function () { return null; }));
+    }
+
+    const rest = await Promise.all(pending.slice(1).map(function (script) {
+        return resolveUniverseId(script, universeCache).catch(function () { return null; });
     }));
+
+    rest.forEach(function (value) { resolved.push(value); });
+
+    if (universeCache.changed) {
+        delete universeCache.changed;
+        writeStore(BOT_UNIVERSES_KEY, universeCache);
+    }
+
+    const universes = [];
+
+    resolved.forEach(function (universe, i) {
+        if (!universe) return;
+        pending[i].__universe = universe;
+        if (universes.indexOf(universe) === -1) universes.push(universe);
+    });
+
+    if (universes.length === 0) return;
+
+    const found = await fetchGameIcons(universes);
+    let changed = false;
+
+    pending.forEach(function (script) {
+        const url = script.__universe ? found[script.__universe] : null;
+        if (!url) return;
+        script.icon = url;
+        store[script.id] = { url: url, key: iconKeyOf(script), placeIds: placeIdsOf(script), at: now };
+        changed = true;
+        setThumb(script, url);
+    });
+
+    if (changed) writeStore(BOT_GAMEICONS_KEY, cache);
+}
+
+function refreshThumb(script) {
+    dropIconCache(script.id);
+    if (script.__retried) {
+        script.icon = "";
+        return;
+    }
+    script.__retried = true;
+    resolveScriptIcons([script]).catch(function () {});
 }
 
 const BOT_AVATAR_SVG = "data:image/svg+xml," + encodeURIComponent(
