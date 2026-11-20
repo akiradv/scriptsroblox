@@ -256,10 +256,35 @@
         "v1.1.1: Added Discord Prompt",
         "v1.1: Initial release, Advanced Auto Sell, Safe Tree Cutting, Axe Dupe, Free Land, Max Expand, Environment Mods"
       ]
+    },
+    {
+      "id": "is",
+      "name": "Illegal Soccer Hub",
+      "game": "Illegal Soccer",
+      "placeId": 126987974021910,
+      "version": "1.0.0",
+      "working": true,
+      "lastUpdated": "2026-11-20",
+      "available": true,
+      "description": "Streamlined utility suite for Illegal Soccer. Focuses on instant gameplay reactions, infinite stamina, and precise curved shots.",
+      "loadstring": "loadstring(game:HttpGet('https://akiradv.github.io/scriptsroblox/scripts/is.lua'))()",
+      "tags": ["Utility", "Combat", "Stamina", "Shooting"],
+      "features": [
+        "Infinite Stamina (Native Bypass)",
+        "Auto Dribble (Instant dodge)",
+        "Curved Shots (Auto-aims corners)",
+        "Auto GK (Simplified, requires attention)",
+        "Auto Collect Items",
+        "Anti-Stun",
+        "Server Hop & Rejoin"
+      ],
+      "changelog": [
+        "v1.0.0: Initial release, Infinite Stamina via native game module, Instant Auto Dribble, Curved Shots aiming for the corners"
+      ]
     }
   ],
   "roadmap": {
-    "developing": ["Tower of Hell", "Illegal Soccer"],
+    "developing": ["Tower of Hell"],
     "planned": ["Arsenal", "99 Nights In the Forest", "Fisch", "Prison Life", "Steal a Brainrot","Rivals","BedWars", "Fish It"]
   }
 }
