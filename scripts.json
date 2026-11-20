@@ -279,12 +279,40 @@
         "Server Hop & Rejoin"
       ],
       "changelog": [
-        "v1.0.0: Initial release, Infinite Stamina via native game module, Instant Auto Dribble, Curved Shots aiming for the corners"
+        "v1.0.0: Initial release, Infinite Stamina via native game module, Instant Auto Dribble, Curved Shots aiming for the corners."
+      ]
+    },
+    {
+      "id": "toh",
+      "name": "ToH Hub",
+      "game": "Tower of Hell",
+      "placeId": 1962086868,
+      "version": "1.0.0",
+      "working": true,
+      "lastUpdated": "2026-11-20",
+      "available": true,
+      "description": "Utility suite for Tower of Hell. Features Kill Brick Immunity, Noclip, Infinite Jump, Finish Teleport, and visual mods for a stress-free climb.",
+      "loadstring": "loadstring(game:HttpGet('https://akiradv.github.io/scriptsroblox/scripts/toh.lua'))()",
+      "tags": ["Utility", "Movement", "Protection", "Visuals"],
+      "features": [
+        "Kill Brick Immunity",
+        "Teleport to Finish",
+        "Infinite Jump",
+        "Walk Speed & Jump Power",
+        "Noclip",
+        "Full Bright & No Fog",
+        "ESP Players & Kill Bricks",
+        "Headless & Korblox",
+        "Anti-AFK",
+        "Server Hop & Rejoin"
+      ],
+      "changelog": [
+        "v1.0.0: Initial release, Kill Brick Immunity, Noclip, Inf Jump, Teleport to Finish, ESP and Avatar mods"
       ]
     }
   ],
   "roadmap": {
-    "developing": ["Tower of Hell"],
-    "planned": ["Arsenal", "99 Nights In the Forest", "Fisch", "Prison Life", "Steal a Brainrot","Rivals","BedWars", "Fish It"]
+    "developing": ["Prison Life"],
+    "planned": ["Arsenal", "99 Nights In the Forest", "Fisch", "Steal a Brainrot","Rivals","BedWars", "Fish It"]
   }
 }
