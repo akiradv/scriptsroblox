@@ -267,7 +267,7 @@
       "lastUpdated": "2026-11-20",
       "available": true,
       "description": "Streamlined utility suite for Illegal Soccer. Focuses on instant gameplay reactions, infinite stamina, and precise curved shots.",
-      "loadstring": "loadstring(game:HttpGet('https://akiradv.github.io/scriptsroblox/scripts/is.lua'))()",
+      "loadstring": "loadstring(game:HttpGet('https://akiradv.github.io/scriptsroblox/scripts/illegal.lua'))()",
       "tags": ["Utility", "Combat", "Stamina", "Shooting"],
       "features": [
         "Infinite Stamina (Native Bypass)",
