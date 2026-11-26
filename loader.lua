@@ -46,16 +46,16 @@ if not match and UNIVERSE_ID and UNIVERSE_ID > 0 then
     match = map["universe_" .. tostring(UNIVERSE_ID)]
 end
 
-if not match then
+if not match and UNIVERSE_ID and UNIVERSE_ID > 0 then
     local okApi, res = pcall(function() 
-        return game:HttpGet("https://apis.roblox.com/universes/v1/places/" .. tostring(ID) .. "/universe") 
+        return game:HttpGet("https://games.roblox.com/v1/games?universeIds=" .. tostring(UNIVERSE_ID)) 
     end)
     if okApi and res then
         local okJson, data = pcall(function() 
             return game:GetService("HttpService"):JSONDecode(res) 
         end)
-        if okJson and data and data.universeId then
-            match = map["universe_" .. tostring(data.universeId)]
+        if okJson and data and data.data and data.data[1] and data.data[1].rootPlaceId then
+            match = map["place_" .. tostring(data.data[1].rootPlaceId)]
         end
     end
 end
